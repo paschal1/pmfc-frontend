@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200..800&display=swap');
+
+body {
+  background-color: rgb(24, 25, 27);
+}
+
+/* Scrollbar Track */
+::-webkit-scrollbar {
+  width: 8px; /* Vertical scrollbar width */
+  height: 8px; /* Horizontal scrollbar height */
+}
+
+/* Track Background */
+::-webkit-scrollbar-track {
+  background: #f3f4f6; /* Light gray background */
+  border-radius: 4px; /* Rounded corners */
+}
+
+/* Scrollbar Thumb */
+::-webkit-scrollbar-thumb {
+  background: #9ca3af; /* Gray thumb color */
+  border-radius: 4px; /* Rounded corners */
+  border: 2px solid #f3f4f6; /* Adds padding around the thumb */
+}
+
+/* Scrollbar Thumb Hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #6b7280; /* Darker gray on hover */
+}
+
+/* Firefox-specific scrollbar styling */
+* {
+  scrollbar-width: thin; /* Thin scrollbar for Firefox */
+  scrollbar-color: #9ca3af #f3f4f6; /* Thumb and track colors */
+}
+
+
+.text {
+  font-family: 'Dosis', sans-serif;
+  font-weight: 300;
+  letter-spacing: 7px;
+  font-size: 11px;
+}
+
+.text2 {
+  font-family: 'Dosis', sans-serif;
+  line-height: 33px;
+  letter-spacing: 5px;
+}
+
+.text1 {
+  font-family: 'Dosis', sans-serif;
+  /* font-optical-sizing: auto; */
+  font-weight: 300;
+  letter-spacing: 11px;
+  line-height: 20px;
+}
+
+.text3 {
+  font-family: 'Dosis', sans-serif;
+  font-weight: 800;
+  letter-spacing: 3px;
+  font-size: 11px;
+}
+
+.text4 {
+  font-family: 'Dosis', sans-serif;
+  font-weight: 200;
+  letter-spacing: 5px;
+  font-size: 28px;
+  line-height: 33.6px;
+}
+
+.bg2 {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+.shadow-custom {
+  box-shadow: 5px 10px 20px rgba(0, 0, 0, 0.8), 0px 15px 25px rgba(0, 0, 0, 0.6);
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

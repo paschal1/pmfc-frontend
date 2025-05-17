@@ -1,0 +1,883 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Dashboard Component matches the snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="bg-white flex flex-col pb-[5rem]"
+  >
+    <div
+      class="grid grid-cols-1 lg:grid-cols-2 mt-8 xl:ml-[20rem] lg:gap-4 gap-4"
+      data-testid="dashboard-container"
+    >
+      <div
+        class="lg:w-[501px] w-[90%] h-[140px] bg-[#F2F2F2] rounded-xl mx-auto flex items-center justify-between px-7"
+      >
+        <div
+          class="flex flex-row items-center"
+        >
+          <div
+            class="w-[4px] h-[95px] bg-black"
+          />
+          <div
+            class="flex flex-col ml-4 "
+          >
+            <h1
+              class="text-[#9A9A9A]"
+            >
+              Total Revenue
+            </h1>
+            <h1
+              class="text-[#4A5568] font-semibold text-2xl"
+            >
+              $6654
+            </h1>
+          </div>
+        </div>
+        <div
+          class="bg-gray-400 h-[40px] w-[40px] flex items-center justify-center rounded-[7px]"
+        >
+          <svg
+            class="h-[30px] w-[30px]"
+            data-testid="icon-revenue"
+            fill="currentColor"
+            height="1em"
+            stroke="currentColor"
+            stroke-width="0"
+            viewBox="0 0 24 24"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 1.25c2.487 0 4.773.402 6.466 1.079.844.337 1.577.758 2.112 1.264.536.507.922 1.151.922 1.907v12.987l-.026.013h.026c0 .756-.386 1.4-.922 1.907-.535.506-1.268.927-2.112 1.264-1.693.677-3.979 1.079-6.466 1.079s-4.774-.402-6.466-1.079c-.844-.337-1.577-.758-2.112-1.264C2.886 19.9 2.5 19.256 2.5 18.5h.026l-.026-.013V5.5c0-.756.386-1.4.922-1.907.535-.506 1.268-.927 2.112-1.264C7.226 1.652 9.513 1.25 12 1.25ZM4 14.371v4.116l-.013.013H4c0 .211.103.487.453.817.351.332.898.666 1.638.962 1.475.589 3.564.971 5.909.971 2.345 0 4.434-.381 5.909-.971.739-.296 1.288-.63 1.638-.962.349-.33.453-.607.453-.817h.013L20 18.487v-4.116a7.85 7.85 0 0 1-1.534.8c-1.693.677-3.979 1.079-6.466 1.079s-4.774-.402-6.466-1.079a7.843 7.843 0 0 1-1.534-.8ZM20 12V7.871a7.85 7.85 0 0 1-1.534.8C16.773 9.348 14.487 9.75 12 9.75s-4.774-.402-6.466-1.079A7.85 7.85 0 0 1 4 7.871V12c0 .21.104.487.453.817.35.332.899.666 1.638.961 1.475.59 3.564.972 5.909.972 2.345 0 4.434-.382 5.909-.972.74-.295 1.287-.629 1.638-.96.35-.33.453-.607.453-.818ZM4 5.5c0 .211.103.487.453.817.351.332.898.666 1.638.962 1.475.589 3.564.971 5.909.971 2.345 0 4.434-.381 5.909-.971.739-.296 1.288-.63 1.638-.962.349-.33.453-.607.453-.817 0-.211-.103-.487-.453-.817-.351-.332-.898-.666-1.638-.962-1.475-.589-3.564-.971-5.909-.971-2.345 0-4.434.381-5.909.971-.739.296-1.288.63-1.638.962C4.104 5.013 4 5.29 4 5.5Z"
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        class="lg:w-[501px] w-[90%] h-[140px] bg-[#F2F2F2] rounded-xl mx-auto flex items-center justify-between px-7"
+      >
+        <div
+          class="flex flex-row items-center"
+        >
+          <div
+            class="w-[4px] h-[95px] bg-[#747DC6]"
+          />
+          <div
+            class="flex flex-col ml-4 "
+          >
+            <h1
+              class="text-[#9A9A9A]"
+            >
+              Total Orders
+            </h1>
+            <h1
+              class="text-[#4A5568] font-semibold text-2xl"
+            >
+              8573
+            </h1>
+          </div>
+        </div>
+        <div
+          class="bg-[#747DC60D] h-[40px] w-[40px] flex items-center justify-center rounded-[7px]"
+        >
+          <svg
+            class="h-[30px] w-[30px] text-[#747DC6]"
+            data-testid="icon-orders"
+            fill="currentColor"
+            height="1em"
+            stroke="currentColor"
+            stroke-width="0"
+            viewBox="0 0 24 24"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M6.50488 2H17.5049C17.8196 2 18.116 2.14819 18.3049 2.4L21.0049 6V21C21.0049 21.5523 20.5572 22 20.0049 22H4.00488C3.4526 22 3.00488 21.5523 3.00488 21V6L5.70488 2.4C5.89374 2.14819 6.19013 2 6.50488 2ZM19.0049 8H5.00488V20H19.0049V8ZM18.5049 6L17.0049 4H7.00488L5.50488 6H18.5049ZM9.00488 10V12C9.00488 13.6569 10.348 15 12.0049 15C13.6617 15 15.0049 13.6569 15.0049 12V10H17.0049V12C17.0049 14.7614 14.7663 17 12.0049 17C9.24346 17 7.00488 14.7614 7.00488 12V10H9.00488Z"
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        class="lg:w-[501px] w-[90%] h-[140px] bg-[#F2F2F2] rounded-xl mx-auto flex items-center justify-between px-7"
+      >
+        <div
+          class="flex flex-row items-center"
+        >
+          <div
+            class="w-[4px] h-[95px] bg-[#EF3F3E]"
+          />
+          <div
+            class="flex flex-col ml-4 "
+          >
+            <h1
+              class="text-[#9A9A9A]"
+            >
+              Total Products
+            </h1>
+            <h1
+              class="text-[#4A5568] font-semibold text-2xl"
+            >
+              893
+            </h1>
+          </div>
+        </div>
+        <div
+          class="bg-[#EF3F3E1A] h-[40px] w-[40px] flex items-center justify-center rounded-[7px]"
+        >
+          <svg
+            class="h-[30px] w-[30px] text-[#EF3F3E]"
+            data-testid="icon-products"
+            fill="currentColor"
+            height="1em"
+            stroke="currentColor"
+            stroke-width="0"
+            viewBox="0 0 24 24"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M7.29117 20.8242L2 22L3.17581 16.7088C2.42544 15.3056 2 13.7025 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C10.2975 22 8.6944 21.5746 7.29117 20.8242ZM7.58075 18.711L8.23428 19.0605C9.38248 19.6745 10.6655 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 13.3345 4.32549 14.6175 4.93949 15.7657L5.28896 16.4192L4.63416 19.3658L7.58075 18.711Z"
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        class="lg:w-[501px] w-[90%] h-[140px] bg-[#F2F2F2] rounded-xl mx-auto flex items-center justify-between px-7"
+      >
+        <div
+          class="flex flex-row items-center"
+        >
+          <div
+            class="w-[4px] h-[95px] bg-[#9E65C2]"
+          />
+          <div
+            class="flex flex-col ml-4 "
+          >
+            <h1
+              class="text-[#9A9A9A]"
+            >
+              Total Customers
+            </h1>
+            <h1
+              class="text-[#4A5568] font-semibold text-2xl"
+            >
+              4.6K
+            </h1>
+          </div>
+        </div>
+        <div
+          class="bg-[#9E65C21A] h-[40px] w-[40px] flex items-center justify-center rounded-[7px]"
+        >
+          <svg
+            class="h-[30px] w-[30px] text-[#9E65C2]"
+            data-testid="icon-customers"
+            fill="currentColor"
+            height="1em"
+            stroke="currentColor"
+            stroke-width="0"
+            viewBox="0 0 24 24"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M14 14.252V16.3414C13.3744 16.1203 12.7013 16 12 16C8.68629 16 6 18.6863 6 22H4C4 17.5817 7.58172 14 12 14C12.6906 14 13.3608 14.0875 14 14.252ZM12 13C8.685 13 6 10.315 6 7C6 3.685 8.685 1 12 1C15.315 1 18 3.685 18 7C18 10.315 15.315 13 12 13ZM12 11C14.21 11 16 9.21 16 7C16 4.79 14.21 3 12 3C9.79 3 8 4.79 8 7C8 9.21 9.79 11 12 11ZM18 17V14H20V17H23V19H20V22H18V19H15V17H18Z"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div
+      class="bg-[#F2F2F2] w-[90%] lg:w-[1014px] mt-8 xl:ml-[20.5rem] mx-auto rounded-xl pb-4 px-4 lg:px-0 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 ease-in-out"
+      data-testid="dashboard-category"
+    >
+      <h1
+        class="mt-6 text-lg text-[#4A5568] font-semibold lg:ml-[5%] sm:ml-[10%] ml-[3%]"
+      >
+        Category
+      </h1>
+      <div
+        class="grid lg:grid-cols-6 grid-cols-3 gap-4 mt-4 lg:ml-6 mx-auto"
+      >
+        <div
+          class="flex flex-col items-center"
+        >
+          <div
+            class="bg-gray-200 h-[105px] rounded-xl lg:w-[105px] w-[93px] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#fab702] group"
+          >
+            <svg
+              class="h-[50px] w-[50px] opacity-50 group-hover:text-black group-hover:opacity-100"
+              fill="currentColor"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="0"
+              viewBox="0 0 512 512"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M384 240H96V136a40.12 40.12 0 0 1 40-40h240a40.12 40.12 0 0 1 40 40v104zM48 416V304a64.19 64.19 0 0 1 64-64h288a64.19 64.19 0 0 1 64 64v112"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="32"
+              />
+              <path
+                d="M48 416v-8a24.07 24.07 0 0 1 24-24h368a24.07 24.07 0 0 1 24 24v8M112 240v-16a32.09 32.09 0 0 1 32-32h80a32.09 32.09 0 0 1 32 32v16m0 0v-16a32.09 32.09 0 0 1 32-32h80a32.09 32.09 0 0 1 32 32v16"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="32"
+              />
+            </svg>
+          </div>
+          <h1
+            class="mt-1 text-[#333333]"
+          >
+            Bed
+          </h1>
+        </div>
+        <div
+          class="flex flex-col items-center"
+        >
+          <div
+            class="bg-gray-200 h-[105px] rounded-xl lg:w-[105px] w-[93px] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#fab702] group"
+          >
+            <svg
+              class="h-[50px] w-[50px] opacity-50 group-hover:text-black group-hover:opacity-100"
+              fill="currentColor"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="0"
+              viewBox="0 0 24 24"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21 4c0-1.103-.897-2-2-2H5c-1.103 0-2 .897-2 2v16c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2V4zM5 4h14v7H5V4zm0 16v-7h14.001v7H5z"
+              />
+              <path
+                d="M14 7h-4V6H8v3h8V6h-2zm0 8v1h-4v-1H8v3h8v-3z"
+              />
+            </svg>
+          </div>
+          <h1
+            class="mt-1 text-[#333333]"
+          >
+            Cabinet
+          </h1>
+        </div>
+        <div
+          class="flex flex-col items-center"
+        >
+          <div
+            class="bg-gray-200 h-[105px] rounded-xl lg:w-[105px] w-[93px] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#fab702] group"
+          >
+            <svg
+              class="h-[50px] w-[50px] opacity-50 group-hover:text-black group-hover:opacity-100"
+              fill="currentColor"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="0"
+              viewBox="0 0 24 24"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 3C5.79086 3 4 4.79086 4 7V9.12602C2.27477 9.57006 1 11.1362 1 13C1 14.4817 1.8052 15.7734 3 16.4646V19V21H5V20H19V21H21V19V16.4646C22.1948 15.7734 23 14.4817 23 13C23 11.1362 21.7252 9.57006 20 9.12602V7C20 4.79086 18.2091 3 16 3H8ZM18 9.12602C16.2748 9.57006 15 11.1362 15 13H9C9 11.1362 7.72523 9.57006 6 9.12602V7C6 5.89543 6.89543 5 8 5H16C17.1046 5 18 5.89543 18 7V9.12602ZM9 15H15V16H17V13C17 11.8954 17.8954 11 19 11C20.1046 11 21 11.8954 21 13C21 13.8693 20.4449 14.6114 19.6668 14.8865C19.2672 15.0277 19 15.4055 19 15.8293V18H5V15.8293C5 15.4055 4.73284 15.0277 4.33325 14.8865C3.5551 14.6114 3 13.8693 3 13C3 11.8954 3.89543 11 5 11C6.10457 11 7 11.8954 7 13V16H9V15Z"
+              />
+            </svg>
+          </div>
+          <h1
+            class="mt-1 text-[#333333]"
+          >
+            Chair
+          </h1>
+        </div>
+        <div
+          class="flex flex-col items-center"
+        >
+          <div
+            class="bg-gray-200 h-[105px] rounded-xl lg:w-[105px] w-[93px] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#fab702] group"
+          >
+            <svg
+              class="h-[50px] w-[50px] opacity-50 group-hover:text-black group-hover:opacity-100"
+              fill="currentColor"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="0"
+              viewBox="0 0 256 256"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M244,60H12a12,12,0,0,0,0,24h4V192a12,12,0,0,0,24,0V156H216v36a12,12,0,0,0,24,0V84h4a12,12,0,0,0,0-24ZM40,84h76v48H40Zm176,48H140V84h76ZM100,108a12,12,0,0,1-12,12H68a12,12,0,0,1,0-24H88A12,12,0,0,1,100,108Zm56,0a12,12,0,0,1,12-12h20a12,12,0,0,1,0,24H168A12,12,0,0,1,156,108Z"
+              />
+            </svg>
+          </div>
+          <h1
+            class="mt-1 text-[#333333]"
+          >
+            Desk
+          </h1>
+        </div>
+        <div
+          class="flex flex-col items-center"
+        >
+          <div
+            class="bg-gray-200 h-[105px] rounded-xl lg:w-[105px] w-[93px] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#fab702] group"
+          >
+            <svg
+              class="h-[50px] w-[50px] opacity-50 group-hover:text-black group-hover:opacity-100"
+              fill="currentColor"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="0"
+              viewBox="0 0 24 24"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15 3H9C6.02024 3 3.54782 5.17213 3.07974 8.01937C3.21811 8.00655 3.35829 8 3.5 8C5.98528 8 8 10.0147 8 12.5V14H16V12.5C16 10.0147 18.0147 8 20.5 8C20.6417 8 20.7819 8.00655 20.9203 8.01937C20.4522 5.17213 17.9798 3 15 3ZM21 10.05C20.8384 10.0172 20.6712 10 20.5 10C19.1193 10 18 11.1193 18 12.5V17H16V16H8V17H6V12.5C6 11.1193 4.88071 10 3.5 10C3.32877 10 3.16156 10.0172 3 10.05C1.85888 10.2816 1 11.2905 1 12.5C1 13.0886 1.18173 13.5388 1.39024 14.0554C1.67083 14.7505 1.9999 15.5658 1.99978 17V20C1.99978 20.5523 2.44749 21 2.99978 21H12H21.0002C21.5525 21 22.0002 20.5523 22.0002 20V17C22.0001 15.5658 22.3292 14.7505 22.6098 14.0554C22.8183 13.5388 23 13.0886 23 12.5C23 11.2905 22.1411 10.2816 21 10.05Z"
+              />
+            </svg>
+          </div>
+          <h1
+            class="mt-1 text-[#333333]"
+          >
+            Sofa
+          </h1>
+        </div>
+        <div
+          class="flex flex-col items-center"
+        >
+          <div
+            class="bg-gray-200 h-[105px] rounded-xl lg:w-[105px] w-[93px] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#fab702] group"
+          >
+            <svg
+              class="h-[50px] w-[50px] opacity-50 group-hover:text-black group-hover:opacity-100"
+              fill="currentColor"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="0"
+              viewBox="0 0 24 24"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0 0h24v24H0z"
+                fill="none"
+              />
+              <path
+                d="m14.17 13.71 1.4-2.42c.09-.15.05-.34-.08-.45l-1.48-1.16c.03-.22.05-.45.05-.68s-.02-.46-.05-.69l1.48-1.16c.13-.11.17-.3.08-.45l-1.4-2.42c-.09-.15-.27-.21-.43-.15l-1.74.7c-.36-.28-.75-.51-1.18-.69l-.26-1.85a.364.364 0 0 0-.35-.29h-2.8c-.17 0-.32.13-.35.3L6.8 4.15c-.42.18-.82.41-1.18.69l-1.74-.7c-.16-.06-.34 0-.43.15l-1.4 2.42c-.09.15-.05.34.08.45l1.48 1.16c-.03.22-.05.45-.05.68s.02.46.05.69l-1.48 1.16c-.13.11-.17.3-.08.45l1.4 2.42c.09.15.27.21.43.15l1.74-.7c.36.28.75.51 1.18.69l.26 1.85c.03.16.18.29.35.29h2.8c.17 0 .32-.13.35-.3l.26-1.85c.42-.18.82-.41 1.18-.69l1.74.7c.16.06.34 0 .43-.15zM8.81 11c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM21.92 18.67l-.96-.74c.02-.14.04-.29.04-.44 0-.15-.01-.3-.04-.44l.95-.74c.08-.07.11-.19.05-.29l-.9-1.55c-.05-.1-.17-.13-.28-.1l-1.11.45c-.23-.18-.48-.33-.76-.44l-.17-1.18a.216.216 0 0 0-.21-.2h-1.79c-.11 0-.21.08-.22.19l-.17 1.18c-.27.12-.53.26-.76.44l-1.11-.45a.23.23 0 0 0-.28.1l-.9 1.55c-.05.1-.04.22.05.29l.95.74a3.145 3.145 0 0 0 0 .88l-.95.74c-.08.07-.11.19-.05.29l.9 1.55c.05.1.17.13.28.1l1.11-.45c.23.18.48.33.76.44l.17 1.18c.02.11.11.19.22.19h1.79c.11 0 .21-.08.22-.19l.17-1.18c.27-.12.53-.26.75-.44l1.12.45c.1.04.22 0 .28-.1l.9-1.55c.06-.09.03-.21-.05-.28zm-4.29.16a1.35 1.35 0 1 1 .001-2.701 1.35 1.35 0 0 1-.001 2.701z"
+              />
+            </svg>
+          </div>
+          <h1
+            class="mt-1 text-[#333333]"
+          >
+            Misc
+          </h1>
+        </div>
+      </div>
+    </div>
+    <div
+      class="bg-[#F2F2F2] w-[90%] lg:w-[1014px] mt-8 xl:ml-[20.5rem] mx-auto rounded-xl flex flex-col px-7 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 ease-in-out"
+      data-testid="dashboard-best-sellers"
+    >
+      <div
+        class="flex items-center justify-between mt-4"
+      >
+        <h1
+          class="text-lg font-semibold text-[#4A5568]"
+        >
+          Best Selling Product
+        </h1>
+        <div
+          class="lg:flex hidden items-center gap-2"
+        >
+          <h1
+            class="font-semibold"
+          >
+            Sort By:
+          </h1>
+          <h1
+            class="text-[#4A5568]"
+          >
+            Today
+          </h1>
+          <svg
+            class="h-[9px] w-[9px] text-[#4A5568] cursor-pointer"
+            fill="currentColor"
+            height="1em"
+            stroke="currentColor"
+            stroke-width="0"
+            viewBox="0 0 24 24"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M11.178 19.569a.998.998 0 0 0 1.644 0l9-13A.999.999 0 0 0 21 5H3a1.002 1.002 0 0 0-.822 1.569l9 13z"
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        class="w-full h-[1px] mt-3 bg-gray-300 mb-8"
+      />
+      <div
+        class="overflow-x-auto relative"
+      >
+        <table
+          class="min-w-full border-collapse"
+        >
+          <thead>
+            <tr
+              class="text-left bg-gray-100"
+            >
+              <th
+                class="px-4 py-2"
+              >
+                Image
+              </th>
+              <th
+                class="px-4 py-2"
+              >
+                Name
+              </th>
+              <th
+                class="px-4 py-2"
+              >
+                Price
+              </th>
+              <th
+                class="px-4 py-2"
+              >
+                Orders
+              </th>
+              <th
+                class="px-4 py-2"
+              >
+                Stock
+              </th>
+              <th
+                class="px-4 py-2"
+              >
+                Amount
+              </th>
+              <th
+                class="px-4 py-2"
+              >
+                Date
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="border-b last:border-b-0"
+            >
+              <td
+                class="px-4 py-3"
+              >
+                <div
+                  class="w-[80px] h-[80px] bg-gray-200 flex items-center justify-center rounded-xl"
+                >
+                  <img
+                    alt="img"
+                    class="h-[60px] w-[60px] object-contain"
+                    src="/chair.webp"
+                  />
+                </div>
+              </td>
+              <td
+                class="px-4 py-3"
+              >
+                <h1
+                  class="text-lg font-medium"
+                >
+                  Wooden Chair
+                </h1>
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                $29
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                74
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                510
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                $1759
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568] whitespace-nowrap"
+              >
+                22-01-2025
+              </td>
+            </tr>
+            <tr
+              class="border-b last:border-b-0"
+            >
+              <td
+                class="px-4 py-3"
+              >
+                <div
+                  class="w-[80px] h-[80px] bg-gray-200 flex items-center justify-center rounded-xl"
+                >
+                  <img
+                    alt="img"
+                    class="h-[60px] w-[60px] object-contain"
+                    src="/bed.png"
+                  />
+                </div>
+              </td>
+              <td
+                class="px-4 py-3"
+              >
+                <h1
+                  class="text-lg font-medium"
+                >
+                  Cupboard
+                </h1>
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                $29
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                73
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                510
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                $1749
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568] whitespace-nowrap"
+              >
+                22-01-2025
+              </td>
+            </tr>
+            <tr
+              class="border-b last:border-b-0"
+            >
+              <td
+                class="px-4 py-3"
+              >
+                <div
+                  class="w-[80px] h-[80px] bg-gray-200 flex items-center justify-center rounded-xl"
+                >
+                  <img
+                    alt="img"
+                    class="h-[60px] w-[60px] object-contain"
+                    src="/sofa.webp"
+                  />
+                </div>
+              </td>
+              <td
+                class="px-4 py-3"
+              >
+                <h1
+                  class="text-lg font-medium"
+                >
+                  Sofa
+                </h1>
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                $29
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                72
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                500
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                $1729
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568] whitespace-nowrap"
+              >
+                22-01-2025
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div
+      class="bg-[#F2F2F2] w-[90%] lg:w-[1014px] mt-8 xl:ml-[20.5rem] mx-auto rounded-xl flex flex-col px-7 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 ease-in-out"
+      data-testid="dashboard-recent-order"
+    >
+      <div
+        class="flex items-center justify-between mt-4"
+      >
+        <h1
+          class="text-lg font-semibold text-[#4A5568]"
+        >
+          Recent Orders
+        </h1>
+        <div
+          class="lg:flex hidden items-center gap-2"
+        >
+          <h1
+            class="font-semibold"
+          >
+            Sort By:
+          </h1>
+          <h1
+            class="text-[#4A5568]"
+          >
+            Today
+          </h1>
+          <svg
+            class="h-[9px] w-[9px] text-[#4A5568] cursor-pointer"
+            fill="currentColor"
+            height="1em"
+            stroke="currentColor"
+            stroke-width="0"
+            viewBox="0 0 24 24"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M11.178 19.569a.998.998 0 0 0 1.644 0l9-13A.999.999 0 0 0 21 5H3a1.002 1.002 0 0 0-.822 1.569l9 13z"
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        class="w-full h-[1px] mt-3 bg-gray-300 mb-8"
+      />
+      <div
+        class="overflow-x-auto relative"
+      >
+        <table
+          class="min-w-full border-collapse"
+        >
+          <thead>
+            <tr
+              class="text-left bg-gray-100"
+            >
+              <th
+                class="px-4 py-2"
+              >
+                Image
+              </th>
+              <th
+                class="px-4 py-2"
+              >
+                Name
+              </th>
+              <th
+                class="px-4 py-2"
+              >
+                Price
+              </th>
+              <th
+                class="px-4 py-2"
+              >
+                Orders
+              </th>
+              <th
+                class="px-4 py-2"
+              >
+                Stock
+              </th>
+              <th
+                class="px-4 py-2"
+              >
+                Amount
+              </th>
+              <th
+                class="px-4 py-2"
+              >
+                Date
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="border-b last:border-b-0"
+            >
+              <td
+                class="px-4 py-3"
+              >
+                <div
+                  class="w-[80px] h-[80px] bg-gray-200 flex items-center justify-center rounded-xl"
+                >
+                  <img
+                    alt="img"
+                    class="h-[60px] w-[60px] object-contain"
+                    src="/chair.webp"
+                  />
+                </div>
+              </td>
+              <td
+                class="px-4 py-3"
+              >
+                <h1
+                  class="text-lg font-medium"
+                >
+                  Wooden Chair
+                </h1>
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                $29
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                74
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                510
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                $1759
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568] whitespace-nowrap"
+              >
+                22-01-2025
+              </td>
+            </tr>
+            <tr
+              class="border-b last:border-b-0"
+            >
+              <td
+                class="px-4 py-3"
+              >
+                <div
+                  class="w-[80px] h-[80px] bg-gray-200 flex items-center justify-center rounded-xl"
+                >
+                  <img
+                    alt="img"
+                    class="h-[60px] w-[60px] object-contain"
+                    src="/bed.png"
+                  />
+                </div>
+              </td>
+              <td
+                class="px-4 py-3"
+              >
+                <h1
+                  class="text-lg font-medium"
+                >
+                  Cupboard
+                </h1>
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                $29
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                73
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                510
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                $1749
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568] whitespace-nowrap"
+              >
+                22-01-2025
+              </td>
+            </tr>
+            <tr
+              class="border-b last:border-b-0"
+            >
+              <td
+                class="px-4 py-3"
+              >
+                <div
+                  class="w-[80px] h-[80px] bg-gray-200 flex items-center justify-center rounded-xl"
+                >
+                  <img
+                    alt="img"
+                    class="h-[60px] w-[60px] object-contain"
+                    src="/sofa.webp"
+                  />
+                </div>
+              </td>
+              <td
+                class="px-4 py-3"
+              >
+                <h1
+                  class="text-lg font-medium"
+                >
+                  Sofa
+                </h1>
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                $29
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                72
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                500
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568]"
+              >
+                $1729
+              </td>
+              <td
+                class="px-4 py-3 text-[#4A5568] whitespace-nowrap"
+              >
+                22-01-2025
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
