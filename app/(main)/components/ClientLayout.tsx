@@ -1,4 +1,4 @@
-'use client' // Mark this as a client component
+'use client' 
 
 import { usePathname } from 'next/navigation'
 import Navbar from './Navbar'

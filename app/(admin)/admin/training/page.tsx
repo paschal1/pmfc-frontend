@@ -2,6 +2,24 @@
 
 import { training } from '../utils/training'
 
+type StudentsType = {
+  id: number
+  full_name: string
+  age: string
+  gender: string
+  contact_number: string
+  email: string
+  address: string
+  date_of_birth: string
+  emergency_contact: string
+  previous_experience: string
+  joining_date: string
+  program_duration: string
+  current_skill_level: string
+  goals: string
+  
+}
+
 const Training = () => {
   return (
     <div className="bg-white flex flex-col pb-[3rem]">

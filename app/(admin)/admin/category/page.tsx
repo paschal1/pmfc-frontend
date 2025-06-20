@@ -1,13 +1,81 @@
 'use client'
-import { MdOutlineAddBox } from 'react-icons/md'
-import { categories } from '../utils/category'
+import {
+  MdOutlineAddBox,
+  MdOutlineEdit,
+  MdOutlineRemoveRedEye,
+} from 'react-icons/md'
 import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import Cookies from 'js-cookie'
+import Link from 'next/link'
+import { RiDeleteBin5Line } from 'react-icons/ri'
+
+type CategoryType = {
+  id: number
+  name: string
+  image: string
+  thumbnailimage: string
+}
 
 const Category = () => {
   const router = useRouter()
-  
+  const [category, setCategory] = useState<CategoryType[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  const handleDelete = async (id: number) => {
+    try {
+      const token = Cookies.get('adminToken')
+      if (!token) {
+        console.error('No token found')
+        return
+      }
+
+      await axios.delete(`https://api.princem-fc.com/api/categories/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      // Remove deleted category from UI
+      setCategory((prev) => prev.filter((cat) => cat.id !== id))
+    } catch (error: any) {
+      console.error('Error deleting category:', error)
+      setError(error.response.data.message)
+    }
+  }
+
+  useEffect(() => {
+    const fetchCategory = async () => {
+      try {
+        const token = Cookies.get('adminToken')
+
+        if (!token) {
+          console.error('No token found')
+          return
+        }
+
+        const response = await axios.get(
+          'https://api.princem-fc.com/api/categories',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        const categoryData = response.data
+        setCategory(categoryData)
+      } catch (error) {
+        console.error('Error fetching category:', error)
+      }
+    }
+
+    fetchCategory()
+  }, [])
+
   return (
-    <div className="bg-white flex flex-col pb-[3rem]">
+    <div className="bg-white min-h-screen w-full flex flex-col pb-[3rem]">
       <div className="xl:ml-[20rem] mt-8 bg-[#F2F2F2] flex flex-col px-4 w-[90%] lg:w-[1014px] rounded-xl mx-auto mb-8 pb-8">
         <div className="flex items-center justify-between mt-4">
           <h1 className="font-semibold sm:text-xl text-lg">All Category</h1>
@@ -42,13 +110,14 @@ const Category = () => {
                   Category Image
                 </th>
                 <th className="lg:px-16 px-8 py-2 whitespace-nowrap">
-                  Category Icon
+                  Category Thumbnail
                 </th>
+                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">Option</th>
               </tr>
             </thead>
             <tbody>
-              {categories.map((item) => {
-                const Icon = item.icon
+              {category.map((item) => {
+                // const Icon = item.icon
                 return (
                   <tr key={item.id} className="even:bg-white odd:bg-[#F2F2F2]">
                     <td className="lg:px-16 px-8 py-3">
@@ -64,7 +133,31 @@ const Category = () => {
                       </div>
                     </td>
                     <td className="lg:px-24 px-16 py-3 ml-4">
-                      <Icon className="text-[#4A5568] text-4xl" />
+                      <div className="w-[80px] h-[80px] flex items-center justify-center rounded-xl">
+                        {item.thumbnailimage ? (
+                          <img
+                            src={item.thumbnailimage}
+                            alt="Thumbnail"
+                            className="h-[60px] w-[60px] object-contain"
+                          />
+                        ) : (
+                          <span className="text-gray-400 text-sm">
+                            No Thumbnail
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="lg:px-16 px-8 py-3 flex mt-9 gap-3 relative">
+                      <Link href={`/admin/category/${item.id}`}>
+                        <MdOutlineRemoveRedEye className="h-[20px] w-[20px] text-purple-400" />
+                      </Link>
+                      <Link href={`/admin/category/edit/${item.id}`}>
+                        <MdOutlineEdit className="h-[20px] w-[20px] text-blue-400" />
+                      </Link>
+                      <RiDeleteBin5Line
+                        onClick={() => handleDelete(item.id)}
+                        className="h-[20px] w-[20px] text-red-400 cursor-pointer"
+                      />
                     </td>
                   </tr>
                 )

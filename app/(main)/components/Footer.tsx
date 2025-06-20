@@ -16,22 +16,20 @@ const Footer = () => {
           <Link
             href=" https://www.instagram.com/princem_the_housemaster?igsh=OHl3dG5qdWw1ZXlm&utm_source=qr"
             passHref
-            legacyBehavior
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <a target="_blank" rel="noopener noreferrer">
-              <FaInstagram className="text-white h-[30px] w-[30px]" />
-            </a>
+            <FaInstagram className="text-white h-[30px] w-[30px]" />
           </Link>
         </div>
         <div>
           <Link
             href="https://www.facebook.com/PrinceMFurnishingConcept"
             passHref
-            legacyBehavior
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <a target="_blank" rel="noopener noreferrer">
               <FaFacebookF className="text-white h-[30px] w-[30px]" />
-            </a>
           </Link>
         </div>
       </div>

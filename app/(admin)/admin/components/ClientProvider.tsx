@@ -15,7 +15,7 @@ export default function ClientProvider({
 }>) {
   return (
     <Provider store={store}>
-      <div className="bg-[#F2F2F2]">
+      <div className="bg-[#F2F2F2] w-full">
         <Sidebar />
         <MobileSidebar />
         <Header />
