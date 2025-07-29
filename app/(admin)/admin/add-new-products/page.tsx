@@ -67,7 +67,7 @@ const AddNewProducts = () => {
             },
           }
         )
-        const categoryData = response.data
+        const categoryData = response.data.data
         setIsCategory(categoryData)
         console.log('Fetched category:', categoryData)
         // console.log(products)

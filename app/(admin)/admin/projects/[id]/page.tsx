@@ -4,6 +4,7 @@ import { projectData } from '../../../../(main)/data/projects'
 import { useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
 import axios from 'axios'
+import Image from 'next/image'
 
 type ProjectData = {
   id: number
@@ -77,10 +78,13 @@ const ProjectId = () => {
                   <tr className="border border-gray-300">
                     <td className="p-2 font-semibold bg-gray-200">Image </td>
                     <td className="p-2">
-                      <img
+                      <Image
+                        height={32}
+                        width={250}
                         src={project.image}
                         alt="Service Image 1"
                         className="w-[250px] h-32 object-cover rounded-md"
+                        unoptimized
                       />
                     </td>
                   </tr>

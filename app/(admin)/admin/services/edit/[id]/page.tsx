@@ -14,6 +14,8 @@ const EditServiceId = () => {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
+  const [min_price, setMin_price] = useState('')
+  const [max_price, setMax_price] = useState('')
   const [fileName, setFileName] = useState('No file chosen')
   const [fileName1, setFileName1] = useState('No file chosen')
   const [image1, setImage1] = useState<File | null>(null)
@@ -37,10 +39,12 @@ const EditServiceId = () => {
           }
         )
 
-        const serviceData = response.data
+        const serviceData = response.data.data
         setTitle(serviceData.title)
         setDescription(serviceData.description)
         setPrice(serviceData.price)
+        setMin_price(serviceData.min_price)
+        setMax_price(serviceData.max_price)
         setFileName(serviceData.image1 || 'No file chosen')
         setFileName1(serviceData.image2 || 'No file chosen')
       } catch (error) {
@@ -60,8 +64,8 @@ const EditServiceId = () => {
       setFileName('No file chosen')
       setImage1(null)
     }
-  } 
-  
+  }
+
   const handleFileChange2 = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
@@ -81,8 +85,10 @@ const EditServiceId = () => {
     formData.append('title', title)
     formData.append('description', description)
     formData.append('price', price)
-    if (image1) formData.append('image1', image1)      
-    if (image2) formData.append('image2', image2)      
+    formData.append('min_price', min_price)
+    formData.append('max_price', max_price)
+    if (image1) formData.append('image1', image1)
+    if (image2) formData.append('image2', image2)
     formData.append('_method', 'PUT')
 
     try {
@@ -129,7 +135,7 @@ const EditServiceId = () => {
   return (
     <div className="bg-white min-h-screen flex flex-col pb-[4rem]">
       <form onSubmit={handleSubmit}>
-        <div className="xl:ml-[20rem] mt-8 bg-[#F2F2F2] flex flex-col px-4 w-[90%] lg:w-[777px] rounded-xl mx-auto mb-8 pb-8">
+        <div className="xl:ml-[27rem] mt-8 bg-[#F2F2F2] flex flex-col px-4 w-[90%] lg:w-[777px] rounded-xl mx-auto mb-8 pb-8 pt-6">
           <h1 className="font-semibold sm:text-xl text-lg">
             Edit Service #{id}
           </h1>
@@ -167,11 +173,33 @@ const EditServiceId = () => {
                 required
               />
             </div>
+            <div className="mt-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-0">
+              <h1 className="text-gray-600 font-semibold">Min Price</h1>
+              <input
+                type="number"
+                placeholder="Minimum price..."
+                value={min_price}
+                onChange={(e) => setMin_price(e.target.value)}
+                className="border border-[#EFEFEF] bg-[#F9F9F6] lg:w-[539px] w-full py-[10px] pl-3 focus:outline-none rounded-[5px] text-[#4A5568]"
+                required
+              />
+            </div>
+            <div className="mt-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-0">
+              <h1 className="text-gray-600 font-semibold">Max Price</h1>
+              <input
+                type="number"
+                placeholder="Maximum price..."
+                value={max_price}
+                onChange={(e) => setMax_price(e.target.value)}
+                className="border border-[#EFEFEF] bg-[#F9F9F6] lg:w-[539px] w-full py-[10px] pl-3 focus:outline-none rounded-[5px] text-[#4A5568]"
+                required
+              />
+            </div>
 
             {/* Image 1 Upload */}
             <div className="mt-8 flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-0">
               <h1 className="text-gray-600 font-semibold">Image 1</h1>
-              <div className="custom-file-input-wrapper">
+              <div className="custom-file-input-wrapper overflow-hidden">
                 <input
                   type="file"
                   accept="image/*"
@@ -186,7 +214,7 @@ const EditServiceId = () => {
                   htmlFor="service-image1"
                   className="custom-file-label border border-gray-200 bg-[#F9F9F6] lg:w-[539px] h-[40px] focus:outline-none rounded-[5px] text-[#4A5568] flex items-center cursor-pointer"
                 >
-                  <span className="file-label-text bg-gray-200 h-[40px] px-3 text-black flex items-center">
+                  <span className="file-label-text bg-gray-200 h-[40px] px-3 text-black flex items-center whitespace-nowrap">
                     Choose File
                   </span>
                   <span className="file-name text-sm text-gray-500 ml-4">
@@ -199,7 +227,7 @@ const EditServiceId = () => {
             {/* Image 2 Upload */}
             <div className="mt-8 flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-0">
               <h1 className="text-gray-600 font-semibold">Image 2</h1>
-              <div className="custom-file-input-wrapper">
+              <div className="custom-file-input-wrapper overflow-hidden">
                 <input
                   type="file"
                   accept="image/*"
@@ -213,7 +241,7 @@ const EditServiceId = () => {
                   htmlFor="service-image2"
                   className="custom-file-label border border-gray-200 bg-[#F9F9F6] lg:w-[539px] h-[40px] focus:outline-none rounded-[5px] text-[#4A5568] flex items-center cursor-pointer"
                 >
-                  <span className="file-label-text bg-gray-200 h-[40px] px-3 text-black flex items-center">
+                  <span className="file-label-text bg-gray-200 h-[40px] px-3 text-black flex items-center whitespace-nowrap">
                     Choose File
                   </span>
                   <span className="file-name text-sm text-gray-500 ml-4">
@@ -226,17 +254,17 @@ const EditServiceId = () => {
         </div>
         <button
           type="submit"
-          className="bg-[#fab702] flex items-center justify-center h-[40px] w-[140px] text-white rounded-[5px] mb-10 text-[14px] font-semibold xl:ml-[20rem] mx-auto hover:text-black hover:opacity-75 active:opacity-55 transition-all duration-500 ease-in-out"
+          className="bg-[#fab702] flex items-center justify-center h-[40px] w-[140px] text-white rounded-[5px] mb-10 text-[14px] font-semibold xl:ml-[27rem] mx-auto hover:text-black hover:opacity-75 active:opacity-55 transition-all duration-500 ease-in-out"
         >
           {loading ? 'Submitting...' : 'Submit'}
         </button>
         {error && (
-          <p className="text-red-600 text-center xl:text-left xl:ml-[27rem] mt-[-2rem]">
+          <p className="text-red-600 xl:text-left xl:ml-[27rem] mt-[-2rem]">
             {error}
           </p>
         )}
         {success && (
-          <p className="text-green-600 mt-[-2rem] xl:ml-[27rem] text-center xl:text-left">
+          <p className="text-green-600 mt-[-2rem] xl:ml-[27rem]  xl:text-left">
             {success}
           </p>
         )}

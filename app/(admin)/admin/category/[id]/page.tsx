@@ -3,6 +3,7 @@ import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
 import axios from 'axios'
+import Image from 'next/image'
 
 type CategoryType = {
   id: number
@@ -33,7 +34,7 @@ const CategoryId = () => {
             },
           }
         )
-        const categoryData = response.data
+        const categoryData = response.data.data
         setCategory(categoryData)
         console.log('Fetched category:', categoryData)
       } catch (error) {
@@ -91,7 +92,7 @@ const CategoryId = () => {
         )}
       </div>
     </div>
-  )
+  );
 }
 
 export default CategoryId

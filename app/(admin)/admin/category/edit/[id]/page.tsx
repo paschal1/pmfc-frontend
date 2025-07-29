@@ -35,11 +35,12 @@ const EditCategory = () => {
           }
         )
 
-        const categoryData = response.data
+        const categoryData = response.data.data
+        console.log(categoryData)
         setCategoryName(categoryData.name)
         setSlugName(categoryData.slug)
         setFileName(categoryData.image || 'No file chosen')
-        setThumbnailFilename(categoryData.thumbnail || 'No file chosen')
+        setThumbnailFilename(categoryData.thumbnailimage || 'No file chosen')
       } catch (error) {
         console.error('Error fetching Category:', error)
       }
@@ -80,7 +81,7 @@ const EditCategory = () => {
     formData.append('name', categoryName)
     formData.append('slug', slugName)
     if (imageFile) formData.append('image', imageFile)
-    if (thumbnailFile) formData.append('thumbnail', thumbnailFile)
+    if (thumbnailFile) formData.append('thumbnailimage', thumbnailFile)
     formData.append('_method', 'PUT')
 
 
@@ -158,7 +159,7 @@ const EditCategory = () => {
 
           <div className="flex flex-col lg:flex-row lg:items-center justify-between mt-4 gap-3 lg:gap-0">
             <h1 className="font-semibold text-[#4A5568]">Images</h1>
-            <div className="custom-file-input-wrapper">
+            <div className="custom-file-input-wrapper overflow-hidden">
               <input
                 type="file"
                 accept="image/*"
@@ -172,7 +173,7 @@ const EditCategory = () => {
                 htmlFor="category-image"
                 className="custom-file-label border border-gray-200 bg-[#F9F9F6] lg:w-[539px] h-[40px] focus:outline-none rounded-[5px] text-[#4A5568] flex items-center cursor-pointer"
               >
-                <span className="file-label-text bg-gray-200 h-[40px] px-3 text-black flex items-center">
+                <span className="file-label-text bg-gray-200 h-[40px] px-3 text-black flex items-center whitespace-nowrap">
                   Choose File
                 </span>
                 <span className="file-name text-sm text-gray-500 ml-4">
@@ -184,7 +185,7 @@ const EditCategory = () => {
 
           <div className="flex flex-col lg:flex-row lg:items-center justify-between mt-4 gap-3 lg:gap-0">
             <h1 className="font-semibold text-[#4A5568]">Thumbnail Image</h1>
-            <div className="custom-file-input-wrapper">
+            <div className="custom-file-input-wrapper overflow-hidden">
               <input
                 type="file"
                 accept="image/*"
@@ -198,7 +199,7 @@ const EditCategory = () => {
                 htmlFor="thumbnail-image"
                 className="custom-file-label border border-gray-200 bg-[#F9F9F6] lg:w-[539px] h-[40px] focus:outline-none rounded-[5px] text-[#4A5568] flex items-center cursor-pointer"
               >
-                <span className="file-label-text bg-gray-200 h-[40px] px-3 text-black flex items-center">
+                <span className="file-label-text bg-gray-200 h-[40px] px-3 text-black flex items-center whitespace-nowrap">
                   Choose File
                 </span>
                 <span className="file-name text-sm text-gray-500 ml-4">

@@ -53,9 +53,9 @@ const EditProduct = () => {
         setDescription(product.description)
         setFileName(product.image || 'No file chosen')
         setThumbnailFilename(product.thumbnail || 'No file chosen')
-        setIsCategory(categoryRes.data)
+        setIsCategory(categoryRes.data.data)
       } catch (error) {
-        console.error('Error fetching product/category:', error)
+        return
       }
     }
 
@@ -97,7 +97,7 @@ const EditProduct = () => {
     formData.append('stock', stock)
     formData.append('description', description)
     if (imageFile) formData.append('image', imageFile)
-    if (thumbnailFile) formData.append('thumbnail', thumbnailFile)
+    if (thumbnailFile) formData.append('thumbnailImage', thumbnailFile)
     formData.append('_method', 'PUT')
 
     try {
@@ -207,7 +207,7 @@ const EditProduct = () => {
 
           <div className="flex flex-col lg:flex-row lg:items-center justify-between mt-4 gap-3 lg:gap-0">
             <h1 className="font-semibold text-[#4A5568]">Images</h1>
-            <div className="custom-file-input-wrapper">
+            <div className="custom-file-input-wrapper overflow-hidden">
               <input
                 type="file"
                 accept="image/*"
@@ -221,7 +221,7 @@ const EditProduct = () => {
                 htmlFor="product-image"
                 className="custom-file-label border border-gray-200 bg-[#F9F9F6] lg:w-[539px] h-[40px] focus:outline-none rounded-[5px] text-[#4A5568] flex items-center cursor-pointer"
               >
-                <span className="file-label-text bg-gray-200 h-[40px] px-3 text-black flex items-center">
+                <span className="file-label-text bg-gray-200 h-[40px] px-3 text-black flex items-center whitespace-nowrap">
                   Choose File
                 </span>
                 <span className="file-name text-sm text-gray-500 ml-4">

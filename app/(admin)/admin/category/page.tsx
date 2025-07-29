@@ -10,6 +10,7 @@ import axios from 'axios'
 import Cookies from 'js-cookie'
 import Link from 'next/link'
 import { RiDeleteBin5Line } from 'react-icons/ri'
+import Image from 'next/image'
 
 type CategoryType = {
   id: number
@@ -28,7 +29,6 @@ const Category = () => {
     try {
       const token = Cookies.get('adminToken')
       if (!token) {
-        console.error('No token found')
         return
       }
 
@@ -41,7 +41,6 @@ const Category = () => {
       // Remove deleted category from UI
       setCategory((prev) => prev.filter((cat) => cat.id !== id))
     } catch (error: any) {
-      console.error('Error deleting category:', error)
       setError(error.response.data.message)
     }
   }
@@ -52,7 +51,6 @@ const Category = () => {
         const token = Cookies.get('adminToken')
 
         if (!token) {
-          console.error('No token found')
           return
         }
 
@@ -64,10 +62,10 @@ const Category = () => {
             },
           }
         )
-        const categoryData = response.data
+        const categoryData = response.data.data
         setCategory(categoryData)
       } catch (error) {
-        console.error('Error fetching category:', error)
+        return
       }
     }
 
@@ -125,20 +123,26 @@ const Category = () => {
                     </td>
                     <td className="lg:px-16 px-8 py-3">
                       <div className="w-[80px] h-[80px] flex items-center justify-center rounded-xl">
-                        <img
+                        <Image
+                          width={60}
+                          height={60}
                           src={item.image}
                           alt="img"
                           className="h-[60px] w-[60px] object-contain"
+                          unoptimized
                         />
                       </div>
                     </td>
                     <td className="lg:px-24 px-16 py-3 ml-4">
                       <div className="w-[80px] h-[80px] flex items-center justify-center rounded-xl">
                         {item.thumbnailimage ? (
-                          <img
+                          <Image
+                            width={60}
+                            height={60}
                             src={item.thumbnailimage}
                             alt="Thumbnail"
                             className="h-[60px] w-[60px] object-contain"
+                            unoptimized
                           />
                         ) : (
                           <span className="text-gray-400 text-sm">
@@ -160,7 +164,7 @@ const Category = () => {
                       />
                     </td>
                   </tr>
-                )
+                );
               })}
             </tbody>
           </table>

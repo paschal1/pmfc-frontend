@@ -25,7 +25,7 @@ const Enrollment = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchEnrollment = async () => {
       try {
         const token = Cookies.get('adminToken')
 
@@ -44,18 +44,16 @@ const Enrollment = () => {
         )
         const enrollmentData = response.data.enrollment
         setEnrollment(enrollmentData)
-        console.log('Fetched Enrollment:', enrollmentData)
-        // console.log(products)
       } catch (error) {
         console.error('Error fetching category:', error)
       }
     }
 
-    fetchProducts()
+    fetchEnrollment();
   }, [])
 
   return (
-    <div className="bg-white flex flex-col pb-[3rem]">
+    <div className="bg-white min-h-screen w-full flex flex-col pb-[3rem]">
       <div className="xl:ml-[20rem] mt-8 bg-[#F2F2F2] flex flex-col px-4 w-[90%] lg:w-[1014px] rounded-xl mx-auto mb-8 pb-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between mt-4">
           <h1 className="font-semibold sm:text-xl text-lg">Enrollment List</h1>

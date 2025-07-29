@@ -40,8 +40,6 @@ const Projects = () => {
         )
         const projectData = response.data
         setProject(projectData)
-        console.log('Fetched project:', projectData)
-        // console.log(products)
       } catch (error) {
         console.error('Error fetching category:', error)
       }

@@ -8,6 +8,8 @@ const AddService = () => {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
+  const [min_price, setMin_price] = useState('')
+  const [max_price, setMax_price] = useState('')
   const [fileName1, setFileName1] = useState('No file chosen')
   const [fileName2, setFileName2] = useState('No file chosen')
   const [image1, setImage1] = useState<File | null>(null)
@@ -46,6 +48,8 @@ const AddService = () => {
     formData.append('title', title)
     formData.append('description', description)
     formData.append('price', price)
+    formData.append('min_price', min_price)
+    formData.append('max_price', max_price)
     if (image1) formData.append('image1', image1)
     if (image2) formData.append('image2', image2)
 
@@ -70,6 +74,8 @@ const AddService = () => {
         setTitle('')
         setDescription('')
         setPrice('')
+        setMin_price('')
+        setMax_price('')
         setFileName1('No File Chosen')
         setFileName2('No File Chosen')
         setImage1(null)
@@ -93,7 +99,7 @@ const AddService = () => {
   }, [error, success])
 
   return (
-    <div className="bg-white flex flex-col pb-[3rem]">
+    <div className="bg-white min-h-screen w-full flex flex-col pb-[3rem]">
       <form onSubmit={handleSubmit}>
         <div className="xl:ml-[27rem] mt-8 bg-[#F2F2F2] flex flex-col px-4 w-[90%] lg:w-[777px] rounded-xl mx-auto mb-8 pb-8">
           <h1 className="text-xl font-semibold mt-4">Service Information</h1>
@@ -129,6 +135,28 @@ const AddService = () => {
               placeholder="Price"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
+              className="border border-[#EFEFEF] bg-[#F9F9F6] lg:w-[539px] w-full py-[10px] pl-3 focus:outline-none rounded-[5px] text-[#4A5568]"
+              required
+            />
+          </div>
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between mt-4 gap-3 lg:gap-0">
+            <h1 className="font-semibold text-[#4A5568]">Minimum price</h1>
+            <input
+              type="number"
+              placeholder="Minimum price"
+              value={min_price}
+              onChange={(e) => setMin_price(e.target.value)}
+              className="border border-[#EFEFEF] bg-[#F9F9F6] lg:w-[539px] w-full py-[10px] pl-3 focus:outline-none rounded-[5px] text-[#4A5568]"
+              required
+            />
+          </div>
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between mt-4 gap-3 lg:gap-0">
+            <h1 className="font-semibold text-[#4A5568]">Maximum Price</h1>
+            <input
+              type="number"
+              placeholder="Maximum price"
+              value={max_price}
+              onChange={(e) => setMax_price(e.target.value)}
               className="border border-[#EFEFEF] bg-[#F9F9F6] lg:w-[539px] w-full py-[10px] pl-3 focus:outline-none rounded-[5px] text-[#4A5568]"
               required
             />
@@ -193,12 +221,12 @@ const AddService = () => {
           {loading ? 'Submitting...' : 'Submit'}
         </button>
         {error && (
-          <p className="text-red-600 text-center xl:text-left xl:ml-[27rem] mt-[-2rem]">
+          <p className="text-red-600 text-center xl:text-left xl:ml-[27rem] mt-[-2.5rem]">
             {error}
           </p>
         )}
         {success && (
-          <p className="text-green-600 mt-[-2rem] xl:ml-[27rem] text-center lg:text-left">
+          <p className="text-green-600 mt-[-2.5rem] xl:ml-[27rem] text-center lg:text-left">
             {success}
           </p>
         )}

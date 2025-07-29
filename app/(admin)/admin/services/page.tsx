@@ -1,6 +1,5 @@
 'use client'
 import Link from 'next/link'
-import { service } from '../utils/services'
 import { MdOutlineRemoveRedEye } from 'react-icons/md'
 import { MdOutlineEdit } from 'react-icons/md'
 import { RiDeleteBin5Line } from 'react-icons/ri'
@@ -15,10 +14,12 @@ type ServiceType = {
   image1: string
   image2: string
   price: string
+  min_price: string
+  max_price: string
 }
 
 const Services = () => {
-  const [service, setService] = useState<ServiceType[]>([])
+  const [services, setServices] = useState<ServiceType[]>([])
   const [loading, setLoading] = useState(true)
   const [success, setSuccess] = useState('')
 
@@ -37,39 +38,39 @@ const Services = () => {
       })
 
       // Remove deleted category from UI
-      setService((prev) => prev.filter((cat) => cat.id !== id))
-    } catch (error) {}
+      setServices((prev) => prev.filter((item) => item.id !== id))
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   useEffect(() => {
-      const fetchService = async () => {
-        try {
-          const token = Cookies.get('adminToken')
-  
-          if (!token) {
-            console.error('No token found')
-            return
-          }
-  
-          const response = await axios.get(
-            'https://api.princem-fc.com/api/services',
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          )
-          const serviceData = response.data
-          setService(serviceData)
-          console.log('Fetched service:', serviceData)
-          // console.log(products)
-        } catch (error) {
-          console.error('Error fetching category:', error)
+    const fetchService = async () => {
+      try {
+        const token = Cookies.get('adminToken')
+
+        if (!token) {
+          console.error('No token found')
+          return
         }
+
+        const response = await axios.get(
+          'https://api.princem-fc.com/api/services',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        const { data } = response.data
+        setServices(data)
+      } catch (error) {
+        console.error('Error fetching category:', error)
       }
-  
-      fetchService()
-    }, [])
+    }
+
+    fetchService()
+  }, [])
 
   return (
     <div className="bg-white min-h-screen w-full flex flex-col pb-[3rem]">
@@ -97,11 +98,17 @@ const Services = () => {
                 <th className="lg:px-16 px-8 py-2 whitespace-nowrap">Image</th>
                 <th className="lg:px-16 px-8 py-2 whitespace-nowrap">Image</th>
                 <th className="lg:px-16 px-8 py-2 whitespace-nowrap">Price</th>
+                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">
+                  Min Price
+                </th>
+                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">
+                  Max Price
+                </th>
                 <th className="lg:px-16 px-8 py-2">Option</th>
               </tr>
             </thead>
             <tbody>
-              {service.map((item) => (
+              {services.map((item) => (
                 <tr key={item.id} className="even:bg-white odd:bg-[#F2F2F2]">
                   <td className="lg:px-16 px-8 py-3">
                     <h1 className="text-md text-[#4A5568] whitespace-nowrap">
@@ -136,6 +143,16 @@ const Services = () => {
                       ₦{item.price}
                     </h1>
                   </td>
+                  <td className="lg:px-16 px-8 py-3">
+                    <h1 className="text-md text-[#4A5568] whitespace-nowrap">
+                      ₦{item.min_price}
+                    </h1>
+                  </td>
+                  <td className="lg:px-16 px-8 py-3">
+                    <h1 className="text-md text-[#4A5568] whitespace-nowrap">
+                      ₦{item.max_price}
+                    </h1>
+                  </td>
                   <td className="lg:px-16 px-8 py-3 flex mt-9 gap-3">
                     <Link href={`/admin/services/${item.id}`}>
                       <MdOutlineRemoveRedEye className="h-[20px] w-[20px] text-purple-400" />
@@ -143,7 +160,10 @@ const Services = () => {
                     <Link href={`/admin/services/edit/${item.id}`}>
                       <MdOutlineEdit className="h-[20px] w-[20px] text-blue-400" />
                     </Link>
-                    <RiDeleteBin5Line onClick={() => handleDelete(item.id)} className="h-[20px] w-[20px] text-red-400 cursor-pointer" />
+                    <RiDeleteBin5Line
+                      onClick={() => handleDelete(item.id)}
+                      className="h-[20px] w-[20px] text-red-400 cursor-pointer"
+                    />
                   </td>
                 </tr>
               ))}

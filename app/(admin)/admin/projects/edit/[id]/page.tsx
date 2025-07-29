@@ -138,14 +138,19 @@ const EditProjectId = () => {
             </div>
             <div className="mt-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-0">
               <h1 className="text-gray-600 font-semibold">Status</h1>
-              <input
-                type="text"
-                placeholder="status..."
+              <select
+                title="status"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
                 className="border border-[#EFEFEF] bg-[#F9F9F6] lg:w-[539px] w-full py-[10px] pl-3 focus:outline-none rounded-[5px] text-[#4A5568]"
                 required
-              />
+              >
+                <option value="" disabled>
+                  Select status
+                </option>
+                <option value="ongoing">ongoing</option>
+                <option value="completed">completed</option>
+              </select>
             </div>
 
             <div className="flex flex-col lg:flex-row lg:items-center justify-between mt-4 gap-3 lg:gap-0">

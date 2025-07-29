@@ -43,6 +43,7 @@ const Products = () => {
           }
         )
         const productData = response.data.data
+        console.log('Fetched products:', productData)
         setProducts(productData)
       } catch (error) {
         console.error('Error fetching products:', error)

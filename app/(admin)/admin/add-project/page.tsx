@@ -107,14 +107,19 @@ const AddProject = () => {
           </div>
           <div className="flex flex-col lg:flex-row lg:items-center justify-between mt-4 gap-3 lg:gap-0">
             <h1 className="font-semibold text-[#4A5568]">Status</h1>
-            <input
-              type="text"
-              placeholder="Status"
+            <select
+              title='status'
               value={status}
               onChange={(e) => setStatus(e.target.value)}
               className="border border-[#EFEFEF] bg-[#F9F9F6] lg:w-[539px] w-full py-[10px] pl-3 focus:outline-none rounded-[5px] text-[#4A5568]"
               required
-            />
+            >
+              <option value="" disabled>
+                Select status
+              </option>
+              <option value="ongoing">ongoing</option>
+              <option value="completed">completed</option>
+            </select>
           </div>
           {/* First Drag-and-Drop Input - Service Image 1 */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between mt-8 gap-3 lg:gap-0">
@@ -150,12 +155,12 @@ const AddProject = () => {
           {loading ? 'Submitting...' : 'Submit'}
         </button>
         {error && (
-          <p className="text-red-600 text-center xl:text-left xl:ml-[27rem] mt-[-2rem]">
+          <p className="text-red-600 text-center xl:text-left xl:ml-[27rem] mt-[-2.5rem]">
             {error}
           </p>
         )}
         {success && (
-          <p className="text-green-600 mt-[-2rem] xl:ml-[27rem] text-center lg:text-left">
+          <p className="text-green-600 mt-[-2.5rem] xl:ml-[27rem] text-center lg:text-left">
             {success}
           </p>
         )}
