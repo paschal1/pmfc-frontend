@@ -1,6 +1,6 @@
 'use client'
-import { testimonial } from '../utils/testimonials'
-import { MdOutlineEdit, MdOutlineRemoveRedEye } from 'react-icons/md'
+
+import { MdOutlineRemoveRedEye, MdOutlineEdit } from 'react-icons/md'
 import { RiDeleteBin5Line } from 'react-icons/ri'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -15,98 +15,149 @@ type TestimonialData = {
 }
 
 const Testimonial = () => {
-  const [testimonial, setTestimonial] = useState<TestimonialData[]>([])
+  const [testimonials, setTestimonials] = useState<TestimonialData[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
-    const fetchTestimonial = async () => {
-      const token = Cookies.get('adminToken')
-      if (!token) return
-
+    const fetchTestimonials = async () => {
       try {
-        const response = await axios.get(
-          'https://api.princem-fc.com/api/testimonials',
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
+        const token = Cookies.get('adminToken')
+        if (!token) {
+          setLoading(false)
+          return
+        }
 
-        const { data } = response
-        console.log(data)
-        setTestimonial(data)
+        const response = await axios.get('https://api.princem-fc.com/api/testimonials', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+
+        // Adjust based on your API response structure
+        const data = response.data.data || response.data
+        setTestimonials(data)
       } catch (error) {
-        console.error(error)
+        console.error('Error fetching testimonials:', error)
+      } finally {
+        setLoading(false)
       }
     }
 
-    fetchTestimonial()
+    fetchTestimonials()
   }, [])
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this testimonial?')) return
+
+    try {
+      const token = Cookies.get('adminToken')
+      if (!token) return
+
+      await axios.delete(`https://api.princem-fc.com/api/testimonials/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      setTestimonials((prev) => prev.filter((t) => t.id !== id))
+    } catch (error) {
+      console.error('Error deleting testimonial:', error)
+      alert('Failed to delete testimonial')
+    }
+  }
+
+  // Search filter
+  const filteredTestimonials = testimonials.filter(
+    (item) =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.review.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   return (
-    <div className="bg-white min-h-screen w-full flex flex-col pb-[3rem]">
-      <div className="xl:ml-[20rem] mt-8 bg-[#F2F2F2] flex flex-col px-4 w-[90%] lg:w-[1014px] rounded-xl mx-auto mb-8 pb-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mt-4">
-          <h1 className="font-semibold sm:text-xl text-lg">Testimonials</h1>
-          <div className="mt-4">
-            <label className="mr-3">Search</label>
-            <input
-              type="text"
-              placeholder=""
-              title="search"
-              className="border bg-inherit border-black focus:outline-none pl-2 h-[35px] w-[150px] rounded-[4px]"
-            />
-          </div>
+    <div className="max-w-6xl mx-auto">
+      {/* Header */}
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">Testimonials</h1>
+
+        <div className="flex items-center gap-3">
+          <label htmlFor="search" className="text-gray-700 font-medium">
+            Search:
+          </label>
+          <input
+            id="search"
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Name or review..."
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702] w-full sm:w-64"
+          />
         </div>
-        <div className="mt-8 overflow-x-auto relative">
-          <table className="min-w-full border-collapse">
-            <thead>
-              <tr className="text-left bg-gray-200 rounded-[6px] text-[#4A5568]">
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">
-                  User Id
-                </th>
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">Name</th>
-                <th className="lg:px-24 px-8 py-2 whitespace-nowrap">Review</th>
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">Option</th>
+      </div>
+
+      {/* Table Card */}
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full table-auto">
+            <thead className="bg-gray-100 text-gray-700">
+              <tr>
+                <th className="px-6 py-4 text-left font-semibold">User ID</th>
+                <th className="px-6 py-4 text-left font-semibold">Name</th>
+                <th className="px-6 py-4 text-left font-semibold">Review</th>
+                <th className="px-6 py-4 text-center font-semibold">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {testimonial.map((item) => (
-                <tr key={item.id} className="even:bg-white odd:bg-[#F2F2F2]">
-                  <td className="lg:px-16 px-8 py-3">
-                    <h1 className="text-md text-[#4A5568] whitespace-nowrap">
-                      {item.user_id}
-                    </h1>
-                  </td>
-                  <td className="lg:px-16 px-8 py-3">
-                    <h1 className="text-md text-[#4A5568] whitespace-nowrap">
-                      {item.name}
-                    </h1>
-                  </td>
-                  <td className="lg:px-24 px-8 py-3">
-                    <h1 className="text-md text-[#4A5568] w-[400px]">
-                      {item.review}
-                    </h1>
-                  </td>
-                  <td className="lg:px-16 px-8 py-3 flex gap-3">
-                    <Link href={`/admin/testimonial/${item.id}`}>
-                      <MdOutlineRemoveRedEye
-                        className="h-[20px] w-[20px] text-purple-400"
-                        data-testid="view-icon"
-                      />
-                    </Link>
-                    <Link href={`/admin/testimonial/edit/${item.id}`}>
-                      <MdOutlineEdit
-                        className="h-[20px] w-[20px] text-blue-400"
-                        data-testid="edit-icon"
-                      />
-                    </Link>
-                    <RiDeleteBin5Line
-                      className="h-[20px] w-[20px] text-red-400 cursor-pointer"
-                      data-testid="delete-icon"
-                    />
+            <tbody className="divide-y divide-gray-200">
+              {loading ? (
+                <tr>
+                  <td colSpan={4} className="text-center py-12 text-gray-500">
+                    Loading testimonials...
                   </td>
                 </tr>
-              ))}
+              ) : filteredTestimonials.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="text-center py-12 text-gray-500">
+                    {searchTerm ? 'No matching testimonials found' : 'No testimonials yet'}
+                  </td>
+                </tr>
+              ) : (
+                filteredTestimonials.map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50 transition">
+                    <td className="px-6 py-4">
+                      <span className="font-medium text-gray-800">{item.user_id}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-medium text-gray-800 truncate max-w-xs block">
+                        {item.name}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="text-gray-600 max-w-lg truncate">{item.review}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-center gap-4">
+                        <Link
+                          href={`/admin/testimonial/${item.id}`}
+                          className="text-purple-600 hover:text-purple-800"
+                          title="View"
+                        >
+                          <MdOutlineRemoveRedEye className="h-5 w-5" />
+                        </Link>
+                        <Link
+                          href={`/admin/testimonial/edit/${item.id}`}
+                          className="text-blue-600 hover:text-blue-800"
+                          title="Edit"
+                        >
+                          <MdOutlineEdit className="h-5 w-5" />
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(item.id)}
+                          className="text-red-600 hover:text-red-800"
+                          title="Delete"
+                        >
+                          <RiDeleteBin5Line className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

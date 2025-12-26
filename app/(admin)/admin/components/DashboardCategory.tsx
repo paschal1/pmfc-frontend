@@ -29,7 +29,7 @@ const DashboardCategory = () => {
   return (
     <div
       data-testid="dashboard-category"
-      className="bg-[#F2F2F2] w-[90%] lg:w-[1014px] mt-8 xl:ml-[20.5rem] mx-auto rounded-xl pb-4 px-4 lg:px-0 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 ease-in-out"
+     className="bg-[#F2F2F2] w-full max-w-6xl mt-8 mx-auto rounded-xl pb-4 px-4 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 ease-in-out"
     >
       <h1 className="mt-6 text-lg text-[#4A5568] font-semibold lg:ml-[5%] sm:ml-[10%] ml-[3%]">
         Category

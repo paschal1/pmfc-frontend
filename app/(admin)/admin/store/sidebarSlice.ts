@@ -174,6 +174,19 @@ const sidebarSlice = createSlice({
   },
 })
 
+export const closeAllSections = () => (dispatch: any) => {
+  dispatch({ type: 'sidebar/setProducts', payload: false })
+  dispatch({ type: 'sidebar/setCategory', payload: false })
+  dispatch({ type: 'sidebar/setTraining', payload: false })
+  dispatch({ type: 'sidebar/setOrder', payload: false })
+  dispatch({ type: 'sidebar/setTrainingProgram', payload: false })
+  dispatch({ type: 'sidebar/setEnrollment', payload: false })
+  dispatch({ type: 'sidebar/setTestimonial', payload: false })
+  dispatch({ type: 'sidebar/setQuotation', payload: false })
+  dispatch({ type: 'sidebar/setServices', payload: false })
+  dispatch({ type: 'sidebar/setProjects', payload: false })
+}
+
 export const {
   toggleProducts,
   toggleCategory,

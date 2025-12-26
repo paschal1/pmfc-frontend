@@ -1,6 +1,6 @@
 'use client'
+
 import { useParams } from 'next/navigation'
-import { projectData } from '../../../../(main)/data/projects'
 import { useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
 import axios from 'axios'
@@ -15,88 +15,126 @@ type ProjectData = {
 }
 
 const ProjectId = () => {
-  const {id: projectId} = useParams()
+  const { id: projectId } = useParams()
   const [project, setProject] = useState<ProjectData | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchProduct = async () => {
+    const fetchProject = async () => {
+      if (!projectId) return
+
       try {
         const token = Cookies.get('adminToken')
-
         if (!token) {
+          console.error('No authentication token')
+          setLoading(false)
           return
         }
 
         const response = await axios.get(
           `https://api.princem-fc.com/api/projects/${projectId}`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         )
-        const projectData = response.data
-        setProject(projectData)
-        console.log('Fetched project:', projectData)
+
+        setProject(response.data)
       } catch (error) {
-        console.error('Error fetching Category', error)
+        console.error('Error fetching project:', error)
+      } finally {
+        setLoading(false)
       }
     }
 
-    if (projectId) fetchProduct()
+    fetchProject()
   }, [projectId])
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F2F2F2] flex items-center justify-center">
+        <p className="text-xl text-gray-600">Loading project...</p>
+      </div>
+    )
+  }
+
+  if (!project) {
+    return (
+      <div className="min-h-screen bg-[#F2F2F2] flex items-center justify-center">
+        <p className="text-xl text-gray-600">Project not found.</p>
+      </div>
+    )
+  }
+
   return (
-    <div className="bg-white flex flex-col h-[100vh]">
-      <div className="xl:ml-[20rem] mt-8 bg-[#F2F2F2] flex flex-col px-4 w-[90%] lg:w-[1014px] rounded-xl mx-auto mb-8 pb-8 overflow-x-auto">
-        {project ? (
-          <>
-            <div className="mt-4">
-              <h1 className="font-semibold sm:text-xl text-lg">
-                Project #{project.id}
-              </h1>
-            </div>
-            <div className="mt-8 overflow-x-auto">
-              <table className="min-w-full border-collapse border border-gray-300">
-                <tbody>
-                  <tr className="border border-gray-300">
-                    <td className="p-2 font-semibold bg-gray-200">Title</td>
-                    <td className="p-2">{project.title}</td>
-                  </tr>
-                  <tr className="border border-gray-300">
-                    <td className="p-2 font-semibold bg-gray-200">
-                      Description
-                    </td>
-                    <td className="p-2">{project.description}</td>
-                  </tr>
-                  <tr className="border border-gray-300">
-                    <td className="p-2 font-semibold bg-gray-200">
-                      Status
-                    </td>
-                    <td className="p-2">{project.status}</td>
-                  </tr>
-                  <tr className="border border-gray-300">
-                    <td className="p-2 font-semibold bg-gray-200">Image </td>
-                    <td className="p-2">
-                      <Image
-                        height={32}
-                        width={250}
-                        src={project.image}
-                        alt="Service Image 1"
-                        className="w-[250px] h-32 object-cover rounded-md"
-                        unoptimized
-                      />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </>
-        ) : (
-          <h1 className="text-gray-600 text-lg text-center mt-8">
-            Project not found.
-          </h1>
-        )}
+    <div className="min-h-screen bg-[#F2F2F2] py-8 px-4">
+      <div className="max-w-5xl mx-auto">
+        {/* Header */}
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-8">
+          Project Details #{project.id}
+        </h1>
+
+        {/* Details Card */}
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="p-6 lg:p-10">
+            <dl className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Title */}
+              <div className="md:col-span-3">
+                <dt className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                  Title
+                </dt>
+                <dd className="mt-2 text-lg font-medium text-gray-900">
+                  {project.title}
+                </dd>
+              </div>
+
+              {/* Description */}
+              <div className="md:col-span-3">
+                <dt className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                  Description
+                </dt>
+                <dd className="mt-2 text-gray-800 whitespace-pre-wrap">
+                  {project.description}
+                </dd>
+              </div>
+
+              {/* Status */}
+              <div>
+                <dt className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                  Status
+                </dt>
+                <dd className="mt-2">
+                  <span
+                    className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${
+                      project.status === 'ongoing'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-green-100 text-green-800'
+                    }`}
+                  >
+                    {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+                  </span>
+                </dd>
+              </div>
+
+              {/* Image */}
+              <div className="md:col-span-2">
+                <dt className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                  Project Image
+                </dt>
+                <dd className="mt-2">
+                  <div className="relative w-full h-96 bg-gray-100 rounded-xl overflow-hidden border-2 border-dashed border-gray-300">
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </div>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
       </div>
     </div>
   )

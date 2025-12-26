@@ -5,48 +5,77 @@ import { MdOutlineRateReview } from 'react-icons/md'
 import Link from 'next/link'
 import { toggleTestimonial } from '../../store/sidebarSlice'
 
-const TestimonialSidebarSection = () => {
+interface TestimonialSidebarSectionProps {
+  isSidebarCollapsed: boolean
+}
+
+const TestimonialSidebarSection = ({ isSidebarCollapsed }: TestimonialSidebarSectionProps) => {
   const sections = useAppSelector((state) => state.sidebar)
   const dispatch = useAppDispatch()
 
   const handleTestimonialClick = () => {
     dispatch(toggleTestimonial())
   }
+
   return (
-    <>
+    <div className="w-full">
+      {/* Main clickable item */}
       <div
-        onClick={() => handleTestimonialClick()}
-        className="flex items-center justify-between w-[230px] cursor-pointer"
+        onClick={handleTestimonialClick}
+        className="flex items-center justify-between w-full cursor-pointer group py-1"
+        title={isSidebarCollapsed ? 'Testimonials' : undefined}
       >
-        <div className="flex flex-row items-center justify-between gap-8">
-          <MdOutlineRateReview className="h-[20px] w-[20px]" />
-          <h1>Testimonials</h1>
+        <div className="flex items-center gap-4">
+          <MdOutlineRateReview className="h-6 w-6 text-gray-700 flex-shrink-0" />
+          <span
+            className={`font-medium text-gray-800 transition-all duration-200 ${
+              isSidebarCollapsed
+                ? 'w-0 opacity-0 overflow-hidden'
+                : 'opacity-100'
+            }`}
+          >
+            Testimonials
+          </span>
         </div>
-        <div className="">
+
+        {/* Arrow - only visible when sidebar is expanded */}
+        {!isSidebarCollapsed && (
           <motion.div
             animate={{ rotate: sections.testimonial ? 180 : 0 }}
             initial={{ rotate: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <IoIosArrowDown className="cursor-pointer" />
+            <IoIosArrowDown className="h-5 w-5 text-gray-600" />
           </motion.div>
-        </div>
+        )}
       </div>
+
+      {/* Submenu - only shown when expanded and section is open */}
       <AnimatePresence>
-        {sections.testimonial && (
+        {!isSidebarCollapsed && sections.testimonial && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="overflow-hidden flex flex-col gap-4 mt-2 ml-14"
+            className="overflow-hidden flex flex-col gap-3 mt-2 ml-10"
           >
-            <Link href={'/admin/testimonial'}>Testimonials</Link>
-            <Link href={'/admin/add-testimonial'}>Add Testimonial</Link>
+            <Link
+              href="/admin/testimonial"
+              className="text-gray-600 hover:text-gray-900 transition-colors text-sm"
+            >
+              Testimonials List
+            </Link>
+            <Link
+              href="/admin/add-testimonial"
+              className="text-gray-600 hover:text-gray-900 transition-colors text-sm"
+            >
+              Add Testimonial
+            </Link>
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </div>
   )
 }
 

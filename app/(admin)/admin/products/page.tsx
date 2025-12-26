@@ -1,52 +1,55 @@
 'use client'
-import Link from 'next/link'
-import { Product, ProductData } from '../../../(main)/data/product'
-import { MdOutlineRemoveRedEye } from 'react-icons/md'
-import { MdOutlineEdit } from 'react-icons/md'
+
+import { MdOutlineRemoveRedEye, MdOutlineEdit } from 'react-icons/md'
 import { RiDeleteBin5Line } from 'react-icons/ri'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import Cookies from 'js-cookie'
+import axios from 'axios'
+import Image from 'next/image'
 
 type ProductType = {
   id: number
   name: string
   description: string
-  price: string
+  price: string | number
   stock: number
   category_id: number
   image: string
 }
 
+const ITEMS_PER_PAGE = 10
+
 const Products = () => {
   const router = useRouter()
   const [products, setProducts] = useState<ProductType[]>([])
   const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const token = Cookies.get('adminToken') 
-
+        const token = Cookies.get('adminToken')
         if (!token) {
-          console.error('No token found')
+          console.error('No authentication token')
+          setLoading(false)
           return
         }
 
-        const response = await axios.get(
-          'https://api.princem-fc.com/api/products',
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        const productData = response.data.data
-        console.log('Fetched products:', productData)
-        setProducts(productData)
+        const response = await axios.get('https://api.princem-fc.com/api/products', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+
+        // API returns { data: [...] }
+        const data = response.data.data || response.data || []
+        setProducts(data)
       } catch (error) {
         console.error('Error fetching products:', error)
+        setProducts([])
+      } finally {
+        setLoading(false)
       }
     }
 
@@ -54,110 +57,219 @@ const Products = () => {
   }, [])
 
   const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+      return
+    }
+
     try {
       const token = Cookies.get('adminToken')
-      if (!token) {
-        console.error('No token found')
-        return
-      }
+      if (!token) return
 
       await axios.delete(`https://api.princem-fc.com/api/products/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       })
 
-      setProducts((prev) => prev.filter((cat) => cat.id !== id))
-    } catch (error: any) {
+      setProducts((prev) => prev.filter((item) => item.id !== id))
+    } catch (error) {
       console.error('Error deleting product:', error)
+      alert('Failed to delete product')
     }
   }
 
+  // Safe search filter
+  const filteredProducts = products.filter((item) => {
+    if (!searchTerm) return true
+
+    const lowerSearch = searchTerm.toLowerCase()
+
+    const name = (item.name || '').toLowerCase()
+    const description = (item.description || '').toLowerCase()
+    const price = (item.price || '').toString()
+
+    return (
+      name.includes(lowerSearch) ||
+      description.includes(lowerSearch) ||
+      price.includes(searchTerm)
+    )
+  })
+
+  // Pagination
+  const totalItems = filteredProducts.length
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE)
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+  const currentItems = filteredProducts.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+  }
+
   return (
-    <div className="bg-white min-h-screen w-full flex flex-col pb-[3rem]">
-      <div className="mt-8 bg-[#F2F2F2] flex flex-col px-4 w-full max-w-7xl rounded-xl mx-auto mb-8 pb-8">
-        <div className="flex items-center justify-between mt-4">
-          <h1 className="font-semibold sm:text-xl text-lg">Product List</h1>
+    <div className="max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">Product List</h1>
+
+        <div className="flex items-center gap-4">
+          {/* Search */}
+          <div className="flex items-center gap-3">
+            <label htmlFor="search" className="text-gray-700 font-medium">
+              Search:
+            </label>
+            <input
+              id="search"
+              type="text"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value)
+                setCurrentPage(1)
+              }}
+              placeholder="Name, description, price..."
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702] w-full sm:w-64"
+            />
+          </div>
+
+          {/* Add New Button */}
           <button
             onClick={() => router.push('/admin/add-new-products')}
-            className="px-7 py-2 bg-[#fab702] rounded-[5px] text-white text-[13px] font-semibold hover:text-black hover:opacity-75 active:opacity-60 transition-all duration-500 ease-in-out"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#fab702] text-white font-semibold rounded-lg hover:opacity-90 transition shadow-md"
           >
             Add Product
           </button>
         </div>
-        <div className="flex items-center justify-between mt-4">
-          <div></div>
-          <div>
-            <label className="mr-3">Search</label>
-            <input
-              type="text"
-              placeholder=""
-              title="search"
-              className="border bg-inherit border-black focus:outline-none pl-2 h-[35px] w-[150px] rounded-[4px]"
-            />
-          </div>
-        </div>
-        <div className="mt-8 overflow-x-auto relative">
-          <table className="min-w-full border-collapse">
-            <thead>
-              <tr className="text-left bg-gray-200 rounded-[6px] text-[#4A5568]">
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">
-                  Product Image
-                </th>
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">
-                  Product Name
-                </th>
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">
-                  Description
-                </th>
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">
-                  Current Qty
-                </th>
-                <th className="lg:px-16 px-8 py-2">Price</th>
-                <th className="lg:px-16 px-8 py-2">Option</th>
+      </div>
+
+      {/* Table Card */}
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full table-auto">
+            <thead className="bg-gray-100 text-gray-700">
+              <tr>
+                <th className="px-6 py-4 text-left font-semibold">Image</th>
+                <th className="px-6 py-4 text-left font-semibold">Product Name</th>
+                <th className="px-6 py-4 text-left font-semibold">Description</th>
+                <th className="px-6 py-4 text-center font-semibold">Stock</th>
+                <th className="px-6 py-4 text-left font-semibold">Price</th>
+                <th className="px-6 py-4 text-center font-semibold">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {products.map((item) => (
-                <tr key={item.id} className="even:bg-white odd:bg-[#F2F2F2]">
-                  <td className="lg:px-16 px-8 py-3">
-                    <div className="w-[80px] h-[80px] flex items-center justify-center rounded-xl">
-                      <img
-                        src={item.image}
-                        alt="img"
-                        className="h-[60px] w-[60px] object-contain"
-                      />
-                    </div>
-                  </td>
-                  <td className="lg:px-16 px-8 py-3">
-                    <h1 className="text-md text-[#4A5568]">{item.name}</h1>
-                  </td>
-                  <td className="lg:px-16 px-8 py-3 text-[#4A5568]">
-                    {item.description}
-                  </td>
-                  <td className="lg:px-16 px-8 py-3 text-[#4A5568]">
-                    {item.stock}
-                  </td>
-                  <td className="lg:px-16 px-8 py-3 text-[#4A5568]">
-                    ₦{item.price}
-                  </td>
-                  <td className="lg:px-16 px-8 py-3 flex mt-9 gap-3">
-                    <Link href={`/admin/products/${item.id}`}>
-                      <MdOutlineRemoveRedEye className="h-[20px] w-[20px] text-purple-400" />
-                    </Link>
-                    <Link href={`/admin/products/edit/${item.id}`}>
-                      <MdOutlineEdit className="h-[20px] w-[20px] text-blue-400" />
-                    </Link>
-                    <RiDeleteBin5Line
-                      onClick={() => handleDelete(item.id)}
-                      className="h-[20px] w-[20px] text-red-400 cursor-pointer hover:text-red-300"
-                    />
+            <tbody className="divide-y divide-gray-200">
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="text-center py-12 text-gray-500">
+                    Loading products...
                   </td>
                 </tr>
-              ))}
+              ) : currentItems.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="text-center py-12 text-gray-500">
+                    {searchTerm ? 'No matching products found' : 'No products yet'}
+                  </td>
+                </tr>
+              ) : (
+                currentItems.map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50 transition">
+                    <td className="px-6 py-4">
+                      <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden border flex items-center justify-center">
+                        <Image
+                          src={item.image || '/placeholder.jpg'}
+                          alt={item.name}
+                          width={80}
+                          height={80}
+                          className="object-cover"
+                          unoptimized
+                          onError={(e) => {
+                            e.currentTarget.src = '/placeholder.jpg'
+                          }}
+                        />
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="font-medium text-gray-800 truncate max-w-xs">{item.name}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="text-gray-600 truncate max-w-md">{item.description || '-'}</p>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <p className="text-gray-800 font-semibold">{item.stock}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="font-semibold text-gray-900">
+                        ₦{Number(item.price).toLocaleString()}
+                      </p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-center gap-4">
+                        <Link
+                          href={`/admin/products/${item.id}`}
+                          className="text-purple-600 hover:text-purple-800"
+                          title="View"
+                        >
+                          <MdOutlineRemoveRedEye className="h-5 w-5" />
+                        </Link>
+                        <Link
+                          href={`/admin/products/edit/${item.id}`}
+                          className="text-blue-600 hover:text-blue-800"
+                          title="Edit"
+                        >
+                          <MdOutlineEdit className="h-5 w-5" />
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(item.id)}
+                          className="text-red-600 hover:text-red-800"
+                          title="Delete"
+                        >
+                          <RiDeleteBin5Line className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <p className="text-sm text-gray-600">
+              Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{' '}
+              {Math.min(currentPage * ITEMS_PER_PAGE, totalItems)} of {totalItems} products
+            </p>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              >
+                Previous
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition ${
+                    page === currentPage
+                      ? 'bg-[#fab702] text-white'
+                      : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

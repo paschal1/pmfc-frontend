@@ -1,9 +1,9 @@
 'use client'
+
 import Link from 'next/link'
 import { MdOutlineRemoveRedEye } from 'react-icons/md'
 import { MdOutlineEdit } from 'react-icons/md'
 import { RiDeleteBin5Line } from 'react-icons/ri'
-import { projectData } from '../../../(main)/data/projects'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Cookies from 'js-cookie'
@@ -17,125 +17,179 @@ type ProjectData = {
 }
 
 const Projects = () => {
-  const [project, setProject] = useState<ProjectData[]>([])
+  const [projects, setProjects] = useState<ProjectData[]>([])
   const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchProjects = async () => {
       try {
         const token = Cookies.get('adminToken')
-
         if (!token) {
-          console.error('No token found')
+          console.error('No authentication token found')
+          setLoading(false)
           return
         }
 
-        const response = await axios.get(
-          'https://api.princem-fc.com/api/projects',
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        const projectData = response.data
-        setProject(projectData)
+        const response = await axios.get('https://api.princem-fc.com/api/projects', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+
+        setProjects(response.data)
       } catch (error) {
-        console.error('Error fetching category:', error)
+        console.error('Error fetching projects:', error)
+      } finally {
+        setLoading(false)
       }
     }
 
-    fetchProducts()
+    fetchProjects()
   }, [])
 
   const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this project?')) return
+
     try {
       const token = Cookies.get('adminToken')
-      if (!token) {
-        console.error('No token found')
-        return
-      }
+      if (!token) return
 
       await axios.delete(`https://api.princem-fc.com/api/projects/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       })
 
-      setProject((prev) => prev.filter((item) => item.id !== id))
-    } catch (error: any) {
+      setProjects((prev) => prev.filter((item) => item.id !== id))
+    } catch (error) {
       console.error('Error deleting project:', error)
+      alert('Failed to delete project')
     }
   }
 
+  // Filter projects based on search
+  const filteredProjects = projects.filter(
+    (project) =>
+      project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      project.description.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   return (
-    <div className="bg-white min-h-screen w-full flex flex-col pb-[3rem]">
-      <div className="xl:ml-[20rem] mt-8 bg-[#F2F2F2] flex flex-col px-4 w-[90%] lg:w-[1014px] rounded-xl mx-auto mb-8 pb-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mt-4">
-          <h1 className="font-semibold sm:text-xl text-lg">Projects </h1>
-          <div className="mt-4">
-            <label className="mr-3">Search</label>
+    <div className="min-h-screen bg-[#F2F2F2] py-8 px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+          <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-4 sm:mb-0">
+            Projects
+          </h1>
+
+          <div className="flex items-center gap-3">
+            <label htmlFor="search" className="text-gray-700 font-medium">
+              Search:
+            </label>
             <input
+              id="search"
               type="text"
-              placeholder=""
-              title="search"
-              className="border bg-inherit border-black focus:outline-none pl-2 h-[35px] w-[150px] rounded-[4px]"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Title or description..."
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702] w-full sm:w-64"
             />
           </div>
         </div>
-        <div className="mt-8 overflow-x-auto relative">
-          <table className="min-w-full border-collapse">
-            <thead>
-              <tr className="text-left bg-gray-200 rounded-[6px] text-[#4A5568]">
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">Title</th>
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">
-                  Section
-                </th>
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">Image</th>
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">Status</th>
-                <th className="lg:px-16 px-8 py-2">Option</th>
-              </tr>
-            </thead>
-            <tbody>
-              {project.map((item) => (
-                <tr key={item.id} className="even:bg-white odd:bg-[#F2F2F2]">
-                  <td className="lg:px-16 px-8 py-3">
-                    <h1 className="text-md text-[#4A5568] whitespace-nowrap">
-                      {item.title}
-                    </h1>
-                  </td>
-                  <td className="lg:px-16 px-8 py-3">
-                    <h1 className="text-md text-[#4A5568]">
-                      {item.description}
-                    </h1>
-                  </td>
-                  <td className="lg:px-16 px-8 py-3">
-                    <div className="w-[150px] h-[100px] flex items-center justify-center rounded-xl">
-                      <img
-                        src={item.image}
-                        alt="img"
-                        className="h-[80px] w-[180px] object-cover"
-                      />
-                    </div>
-                  </td>
-                  <td className="lg:px-16 px-8 py-3">
-                    <h1 className="text-md text-[#4A5568]">
-                      {item.status}
-                    </h1>
-                  </td>
-                  <td className="lg:px-16 px-8 py-3 flex mt-9 gap-3">
-                    <Link href={`/admin/projects/${item.id}`}>
-                      <MdOutlineRemoveRedEye className="h-[20px] w-[20px] text-purple-400" />
-                    </Link>
-                    <Link href={`/admin/projects/edit/${item.id}`}>
-                      <MdOutlineEdit className="h-[20px] w-[20px] text-blue-400" />
-                    </Link>
-                    <RiDeleteBin5Line onClick={() => handleDelete(item.id)} className="h-[20px] w-[20px] text-red-400 cursor-pointer" />
-                  </td>
+
+        {/* Table Card */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[800px] border-collapse">
+              <thead className="bg-gray-100 text-gray-700">
+                <tr>
+                  <th className="px-6 py-4 text-left font-semibold">Title</th>
+                  <th className="px-6 py-4 text-left font-semibold">Description</th>
+                  <th className="px-6 py-4 text-left font-semibold text-center">Image</th>
+                  <th className="px-6 py-4 text-left font-semibold">Status</th>
+                  <th className="px-6 py-4 text-left font-semibold text-center">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-10 text-gray-500">
+                      Loading projects...
+                    </td>
+                  </tr>
+                ) : filteredProjects.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-10 text-gray-500">
+                      No projects found
+                    </td>
+                  </tr>
+                ) : (
+                  filteredProjects.map((item) => (
+                    <tr
+                      key={item.id}
+                      className="border-b hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-6 py-4">
+                        <p className="font-medium text-gray-800 truncate max-w-xs">
+                          {item.title}
+                        </p>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-gray-600 truncate max-w-md">
+                          {item.description}
+                        </p>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex justify-center">
+                          <div className="w-32 h-24 bg-gray-200 rounded-lg overflow-hidden border">
+                            <img
+                              src={item.image}
+                              alt={item.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                            item.status === 'ongoing'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-green-100 text-green-800'
+                          }`}
+                        >
+                          {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center gap-4">
+                          <Link
+                            href={`/admin/projects/${item.id}`}
+                            className="text-purple-600 hover:text-purple-800 transition"
+                            title="View"
+                          >
+                            <MdOutlineRemoveRedEye className="h-5 w-5" />
+                          </Link>
+                          <Link
+                            href={`/admin/projects/edit/${item.id}`}
+                            className="text-blue-600 hover:text-blue-800 transition"
+                            title="Edit"
+                          >
+                            <MdOutlineEdit className="h-5 w-5" />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className="text-red-600 hover:text-red-800 transition"
+                            title="Delete"
+                          >
+                            <RiDeleteBin5Line className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

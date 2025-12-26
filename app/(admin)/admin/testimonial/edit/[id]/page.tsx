@@ -1,50 +1,55 @@
 'use client'
-import { useParams } from 'next/navigation'
+
+import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { testimonial } from '../../../utils/testimonials'
-import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
 import axios from 'axios'
 
 const EditTestimonial = () => {
   const { id } = useParams()
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
 
   const [name, setName] = useState('')
   const [review, setReview] = useState('')
+  const [loading, setLoading] = useState(true) // for fetching
+  const [saving, setSaving] = useState(false) // for submit
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
   useEffect(() => {
     const fetchTestimonial = async () => {
+      if (!id) return
+
       try {
         const token = Cookies.get('adminToken')
-        if (!token) return
+        if (!token) {
+          router.push('/admin/login')
+          return
+        }
 
-        const response = await axios.get(
-          `https://api.princem-fc.com/api/testimonials/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
+        const response = await axios.get(`https://api.princem-fc.com/api/testimonials/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
-        const { data } = response
-        setName(data.name)
-        setReview(data.review)
-      } catch (error) {
-        console.error(error)
+        const data = response.data.data || response.data
+        setName(data.name || '')
+        setReview(data.review || '')
+      } catch (err) {
+        console.error(err)
+        setError('Failed to load testimonial')
+      } finally {
+        setLoading(false)
       }
     }
 
     fetchTestimonial()
-  }, [id])
+  }, [id, router])
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault()
-    setLoading(true)
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSaving(true)
+    setError('')
+    setSuccess('')
 
     const formData = new FormData()
     formData.append('name', name)
@@ -53,28 +58,18 @@ const EditTestimonial = () => {
 
     try {
       const token = Cookies.get('adminToken')
-      if (!token) return
+      if (!token) throw new Error('No authentication')
 
-      const response = await axios.post(
-        `https://api.princem-fc.com/api/testimonials/${id}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      if (response.status === 200) {
-        setSuccess('Review Updated Successfully')
-        router.push('/admin/testimonial')
-      } else {
-        setError('Failed to update Testimonial')
-      }
-    } catch (error: any) {
-      console.error(error)
-      setError(error.response?.data?.message || 'Something went wrong.')
+      await axios.post(`https://api.princem-fc.com/api/testimonials/${id}`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      setSuccess('Testimonial updated successfully!')
+      setTimeout(() => router.push('/admin/testimonial'), 1500)
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to update testimonial')
     } finally {
-      setLoading(false)
+      setSaving(false)
     }
   }
 
@@ -87,59 +82,73 @@ const EditTestimonial = () => {
       return () => clearTimeout(timer)
     }
   }, [error, success])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <p className="text-lg text-gray-600">Loading testimonial...</p>
+      </div>
+    )
+  }
+
   return (
-    <div className="bg-white flex flex-col pb-[4rem]">
-      <form onSubmit={handleSubmit}>
-        <div className="xl:ml-[20rem] mt-8 bg-[#F2F2F2] flex flex-col px-4 w-[90%] lg:w-[777px] rounded-xl mx-auto mb-8 pb-8 overflow-x-auto">
-          <div className="mt-4">
-            <h1 className="font-semibold sm:text-xl text-lg">
-              Edit Testimonial #{id}
-            </h1>
+    <div className="max-w-4xl mx-auto">
+      <div className="bg-white rounded-2xl shadow-lg p-8">
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-8">
+          Edit Testimonial #{id}
+        </h1>
+
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Name Field */}
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Customer name"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702] transition"
+              required
+            />
           </div>
-          <div className="mt-8 flex flex-col">
-            <h1 className="font-semibold">Testimonial Information</h1>
-            <div className="flex mt-4 flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-0">
-              <h1 className="text-gray-600 font-semibold">Name</h1>
-              <input
-                type="text"
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="border border-[#EFEFEF] bg-[#F9F9F6] lg:w-[539px] w-full py-[10px] pl-3 focus:outline-none rounded-[5px] text-[#4A5568]"
-                required
-              />
-            </div>
-            <div className="flex flex-col lg:flex-row justify-between mt-4 gap-3 lg:gap-0">
-              <h1 className="font-semibold text-[#4A5568]">Review</h1>
-              <textarea
-                title="text"
-                placeholder="Review..."
-                value={review}
-                onChange={(e) => setReview(e.target.value)}
-                rows={3}
-                className="border border-[#EFEFEF] bg-[#F9F9F6] lg:w-[539px] w-full py-[10px] pl-3 focus:outline-none rounded-[5px] text-[#4A5568]"
-                required
-              />
-            </div>
+
+          {/* Review Field */}
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">Review</label>
+            <textarea
+              value={review}
+              onChange={(e) => setReview(e.target.value)}
+              rows={8}
+              placeholder="Customer review..."
+              className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702] transition resize-none"
+              required
+            />
           </div>
-        </div>
-        <button
-          type="submit"
-          className="bg-[#fab702] flex items-center justify-center h-[40px] w-[140px] text-white rounded-[5px] mb-10 text-[14px] font-semibold xl:ml-[20rem] mx-auto hover:text-black hover:opacity-75 active:opacity-55 transition-all duration-500 ease-in-out"
-        >
-          {loading ? 'Submitting...' : 'Submit'}
-        </button>
-        {error && (
-          <p className="text-red-600 text-center xl:text-left xl:ml-[27rem] mt-[-2rem]">
-            {error}
-          </p>
-        )}
-        {success && (
-          <p className="text-green-600 text-center xl:text-left xl:ml-[27rem] mx-auto">
-            {success}
-          </p>
-        )}
-      </form>
+
+          {/* Submit Button */}
+          <div className="flex justify-center pt-6">
+            <button
+              type="submit"
+              disabled={saving}
+              className="px-12 py-3.5 bg-[#fab702] text-white text-lg font-semibold rounded-lg hover:opacity-90 disabled:opacity-70 disabled:cursor-not-allowed transition shadow-lg"
+            >
+              {saving ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+
+          {/* Feedback Messages */}
+          {error && (
+            <div className="mt-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-center font-medium">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="mt-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg text-center font-medium">
+              {success}
+            </div>
+          )}
+        </form>
+      </div>
     </div>
   )
 }

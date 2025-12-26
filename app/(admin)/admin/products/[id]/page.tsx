@@ -1,100 +1,153 @@
 'use client'
-import { useParams } from 'next/navigation'
+
+import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
 import axios from 'axios'
+import Image from 'next/image'
+import { MdOutlineEdit } from 'react-icons/md'
 
 type ProductType = {
   id: number
   name: string
   description: string
-  price: string
+  price: string | number
   stock: number
   category_id: number
   image: string
 }
 
 const ProductId = () => {
-  const { id: productId } = useParams()
+  const { id } = useParams()
+  const router = useRouter()
   const [product, setProduct] = useState<ProductType | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchProduct = async () => {
+      if (!id) return
+
       try {
         const token = Cookies.get('adminToken')
-
         if (!token) {
-          console.error('No token found')
+          console.error('No authentication token')
+          setLoading(false)
           return
         }
 
-        const response = await axios.get(
-          `https://api.princem-fc.com/api/products/${productId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        const productData = response.data
-        setProduct(productData)
+        const response = await axios.get(`https://api.princem-fc.com/api/products/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+
+        // API returns the product directly or wrapped in .data
+        const data = response.data.data || response.data
+
+        if (!data) {
+          console.error('No product data found:', response.data)
+          setProduct(null)
+        } else {
+          setProduct(data)
+        }
       } catch (error) {
-        console.error('Error fetching products:', error)
+        console.error('Error fetching product:', error)
+        setProduct(null)
+      } finally {
+        setLoading(false)
       }
     }
 
-    if (productId) fetchProduct()
-  }, [productId])
+    fetchProduct()
+  }, [id])
+
+  const handleEdit = () => {
+    router.push(`/admin/products/edit/${id}`)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <p className="text-lg text-gray-600">Loading product details...</p>
+      </div>
+    )
+  }
+
+  if (!product) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <p className="text-xl text-red-600">Product not found</p>
+      </div>
+    )
+  }
+
   return (
-    <div className="bg-white flex flex-col h-[100vh]">
-      <div className="xl:ml-[20rem] mt-8 bg-[#F2F2F2] flex flex-col px-4 w-[90%] lg:w-[1014px] rounded-xl mx-auto mb-8 pb-8 overflow-x-auto">
-        {product ? (
-          <>
-            <div className="mt-4">
-              <h1 className="font-semibold sm:text-xl text-lg">
-                Product #{product.id}
-              </h1>
+    <div className="max-w-5xl mx-auto">
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div className="p-8">
+          {/* Header with Title and Edit Button */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-10">
+            <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
+              Product #{product.id} - {product.name}
+            </h1>
+
+            <button
+              onClick={handleEdit}
+              className="mt-4 sm:mt-0 inline-flex items-center gap-2 px-6 py-3 bg-[#fab702] text-white font-semibold rounded-lg hover:opacity-90 transition shadow-md"
+            >
+              <MdOutlineEdit className="h-5 w-5" />
+              Edit Product
+            </button>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Left Column - Details */}
+            <div className="space-y-8">
+              <div>
+                <p className="text-sm font-medium text-gray-600 uppercase tracking-wider">Product Name</p>
+                <p className="mt-2 text-2xl font-bold text-gray-900">{product.name}</p>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-gray-600 uppercase tracking-wider">Description</p>
+                <p className="mt-2 text-lg text-gray-800 leading-relaxed whitespace-pre-wrap">
+                  {product.description || 'No description provided'}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 uppercase tracking-wider">Price</p>
+                  <p className="mt-2 text-3xl font-bold text-[#fab702]">
+                    ₦{Number(product.price).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600 uppercase tracking-wider">Stock</p>
+                  <p className="mt-2 text-3xl font-bold text-gray-900">{product.stock}</p>
+                </div>
+              </div>
             </div>
-            <div className="mt-8 overflow-x-auto">
-              <table className="min-w-full border-collapse border border-gray-300">
-                <tbody>
-                  <tr className="border border-gray-300">
-                    <td className="p-2 font-semibold bg-gray-200">Name</td>
-                    <td className="p-2">{product.name}</td>
-                  </tr>
-                  <tr className="border border-gray-300">
-                    <td className="p-2 font-semibold bg-gray-200">
-                      Description
-                    </td>
-                    <td className="p-2">{product.description}</td>
-                  </tr>
-                  <tr className="border border-gray-300">
-                    <td className="p-2 font-semibold bg-gray-200">Price</td>
-                    <td className="p-2">{product.price}</td>
-                  </tr>
-                  <tr className="border border-gray-300">
-                    <td className="p-2 font-semibold bg-gray-200">Stock</td>
-                    <td className="p-2">{product.stock}</td>
-                  </tr>
-                  <tr className="border border-gray-300">
-                    <td className="p-2 font-semibold bg-gray-200">Image </td>
-                    <td className="p-2">
-                      <img
-                        src={product.image}
-                        alt="Product Image"
-                        className="w-[250px] h-32 object-cover rounded-md"
-                      />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+
+            {/* Right Column - Image */}
+            <div className="space-y-8">
+              <div>
+                <p className="text-sm font-medium text-gray-600 uppercase tracking-wider mb-4">Product Image</p>
+                <div className="w-full max-w-2xl bg-gray-100 rounded-xl overflow-hidden border shadow-md">
+                  <Image
+                    src={product.image || '/placeholder.jpg'}
+                    alt={product.name}
+                    width={800}
+                    height={600}
+                    className="w-full h-auto object-cover"
+                    unoptimized
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder.jpg'
+                    }}
+                  />
+                </div>
+              </div>
             </div>
-          </>
-        ) : (
-          <h1 className="text-gray-600 text-lg text-center mt-8">
-            Product not found.
-          </h1>
-        )}
+          </div>
+        </div>
       </div>
     </div>
   )

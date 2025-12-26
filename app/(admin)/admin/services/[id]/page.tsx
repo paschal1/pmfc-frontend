@@ -1,126 +1,120 @@
-"use client";
-import { useParams } from "next/navigation";
-import { service } from "../../utils/services";
-import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
-import axios from "axios";
-import Image from "next/image";
+'use client'
+
+import { useParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import Cookies from 'js-cookie'
+import axios from 'axios'
+import Image from 'next/image'
 
 type ServiceType = {
-  id: number;
-  title: string;
-  description: string;
-  image1: string;
-  image2: string;
-  price: string;
-  min_price: string;
-  max_price: string;
-};
+  id: number
+  title: string
+  description: string
+  image1: string
+  image2: string
+  price: string
+  min_price: string
+  max_price: string
+}
 
 const ServiceId = () => {
-  const { id: serviceId } = useParams();
-  const [service, setService] = useState<ServiceType | null>(null);
+  const { id } = useParams()
+  const [service, setService] = useState<ServiceType | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchService = async () => {
       try {
-        const token = Cookies.get("adminToken");
+        const token = Cookies.get('adminToken')
+        if (!token) return
 
-        if (!token) {
-          console.error("No token found");
-          return;
-        }
-
-        const response = await axios.get(
-          `https://api.princem-fc.com/api/services/${serviceId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const serviceData = response.data.data;
-        setService(serviceData);
-      } catch (error) {
-        return
+        const res = await axios.get(`https://api.princem-fc.com/api/services/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        setService(res.data.data)
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setLoading(false)
       }
-    };
+    }
 
-    if (serviceId) fetchService();
-  }, [serviceId]);
+    if (id) fetchService()
+  }, [id])
+
+  if (loading) {
+    return <div className="min-h-screen bg-[#F2F2F2] flex items-center justify-center text-lg">Loading...</div>
+  }
+
+  if (!service) {
+    return <div className="min-h-screen bg-[#F2F2F2] flex items-center justify-center text-red-600">Service not found</div>
+  }
+
   return (
-    <div className="bg-white flex flex-col h-[100vh]">
-      <div className="xl:ml-[20rem] mt-8 bg-[#F2F2F2] flex flex-col px-4 w-[90%] lg:w-[1014px] rounded-xl mx-auto mb-8 pb-8 overflow-x-auto">
-        {service ? (
-          <>
-            <div className="mt-4">
-              <h1 className="font-semibold sm:text-xl text-lg">
-                Service #{service.id}
-              </h1>
+    <div className="min-h-screen bg-[#F2F2F2] py-8 px-4">
+      <div className="max-w-5xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="p-8">
+            <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-8">
+              Service Details #{service.id}
+            </h1>
+
+            <div className="grid lg:grid-cols-2 gap-8">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-700 mb-4">Information</h2>
+                <dl className="space-y-4">
+                  <div>
+                    <dt className="font-medium text-gray-600">Title</dt>
+                    <dd className="mt-1 text-gray-900">{service.title}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-medium text-gray-600">Description</dt>
+                    <dd className="mt-1 text-gray-900 whitespace-pre-wrap">{service.description}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-medium text-gray-600">Price</dt>
+                    <dd className="mt-1 text-gray-900">₦{service.price}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-medium text-gray-600">Price Range</dt>
+                    <dd className="mt-1 text-gray-900">₦{service.min_price} - ₦{service.max_price}</dd>
+                  </div>
+                </dl>
+              </div>
+
+              <div>
+                <h2 className="text-xl font-semibold text-gray-700 mb-4">Images</h2>
+                <div className="grid grid-cols-1 gap-6">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 mb-2">Image 1</p>
+                    <Image
+                      src={service.image1}
+                      alt="Service Image 1"
+                      width={600}
+                      height={400}
+                      className="rounded-lg object-cover w-full border shadow"
+                      unoptimized
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 mb-2">Image 2</p>
+                    <Image
+                      src={service.image2}
+                      alt="Service Image 2"
+                      width={600}
+                      height={400}
+                      className="rounded-lg object-cover w-full border shadow"
+                      unoptimized
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="mt-8 overflow-x-auto">
-              <table className="min-w-full border-collapse border border-gray-300">
-                <tbody>
-                  <tr className="border border-gray-300">
-                    <td className="p-2 font-semibold bg-gray-200">Title</td>
-                    <td className="p-2">{service.title}</td>
-                  </tr>
-                  <tr className="border border-gray-300">
-                    <td className="p-2 font-semibold bg-gray-200">
-                      Description
-                    </td>
-                    <td className="p-2">{service.description}</td>
-                  </tr>
-                  <tr className="border border-gray-300">
-                    <td className="p-2 font-semibold bg-gray-200">Image 1</td>
-                    <td className="p-2">
-                      <Image
-                        width={250}
-                        height={32}
-                        src={service.image1}
-                        alt="Service Image 1"
-                        className="w-[250px] h-32 object-cover rounded-md"
-                        unoptimized
-                      />
-                    </td>
-                  </tr>
-                  <tr className="border border-gray-300">
-                    <td className="p-2 font-semibold bg-gray-200">Image 2</td>
-                    <td className="p-2">
-                      <Image
-                        width={250}
-                        height={32}
-                        src={service.image2}
-                        alt="Service Image 2"
-                        className="w-[250px] h-32 object-cover rounded-md"
-                        unoptimized
-                      />
-                    </td>
-                  </tr>
-                  <tr className="border border-gray-300">
-                    <td className="p-2 font-semibold bg-gray-200">Price</td>
-                    <td className="p-2">{service.price}</td>
-                  </tr>
-                  <tr className="border border-gray-300">
-                    <td className="p-2 font-semibold bg-gray-200">Maximum Price</td>
-                    <td className="p-2">{service.max_price}</td>
-                  </tr>
-                  <tr className="border border-gray-300">
-                    <td className="p-2 font-semibold bg-gray-200">Minimum Price</td>
-                    <td className="p-2">{service.min_price}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </>
-        ) : (
-          <h1 className="text-gray-600 text-lg text-center mt-8">
-            Service not found.
-          </h1>
-        )}
+          </div>
+        </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ServiceId;
+export default ServiceId

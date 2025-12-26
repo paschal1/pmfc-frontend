@@ -1,11 +1,10 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import { useEffect, useState, useCallback } from 'react'
-import { useDropzone } from 'react-dropzone'
-import { service } from '../../../utils/services'
+import { useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
 import axios from 'axios'
+import Image from 'next/image'
 
 const EditServiceId = () => {
   const { id } = useParams()
@@ -16,11 +15,14 @@ const EditServiceId = () => {
   const [price, setPrice] = useState('')
   const [min_price, setMin_price] = useState('')
   const [max_price, setMax_price] = useState('')
-  const [fileName, setFileName] = useState('No file chosen')
-  const [fileName1, setFileName1] = useState('No file chosen')
+  const [existingImage1, setExistingImage1] = useState<string>('')
+  const [existingImage2, setExistingImage2] = useState<string>('')
   const [image1, setImage1] = useState<File | null>(null)
   const [image2, setImage2] = useState<File | null>(null)
+  const [preview1, setPreview1] = useState<string>('')
+  const [preview2, setPreview2] = useState<string>('')
   const [loading, setLoading] = useState(false)
+  const [fetchLoading, setFetchLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
@@ -28,58 +30,50 @@ const EditServiceId = () => {
     const fetchService = async () => {
       try {
         const token = Cookies.get('adminToken')
-        if (!token) return
+        if (!token) {
+          router.push('/admin/login')
+          return
+        }
 
-        const response = await axios.get(
-          `https://api.princem-fc.com/api/services/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
+        const response = await axios.get(`https://api.princem-fc.com/api/services/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
-        const serviceData = response.data.data
-        setTitle(serviceData.title)
-        setDescription(serviceData.description)
-        setPrice(serviceData.price)
-        setMin_price(serviceData.min_price)
-        setMax_price(serviceData.max_price)
-        setFileName(serviceData.image1 || 'No file chosen')
-        setFileName1(serviceData.image2 || 'No file chosen')
-      } catch (error) {
-        console.error('Error fetching Category:', error)
+        const data = response.data.data
+        setTitle(data.title)
+        setDescription(data.description)
+        setPrice(data.price)
+        setMin_price(data.min_price)
+        setMax_price(data.max_price)
+        setExistingImage1(data.image1)
+        setExistingImage2(data.image2)
+        setPreview1(data.image1)
+        setPreview2(data.image2)
+      } catch (err) {
+        console.error(err)
+        setError('Failed to load service data')
+      } finally {
+        setFetchLoading(false)
       }
     }
 
-    fetchService()
-  }, [id])
+    if (id) fetchService()
+  }, [id, router])
 
-  const handleFileChange1 = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+  const handleImageChange = (file: File | null, setter: (f: File | null) => void, previewSetter: (url: string) => void, existing: string) => {
+    setter(file)
     if (file) {
-      setFileName(file.name)
-      setImage1(file)
+      previewSetter(URL.createObjectURL(file))
     } else {
-      setFileName('No file chosen')
-      setImage1(null)
+      previewSetter(existing) // fallback to existing
     }
   }
 
-  const handleFileChange2 = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      setFileName1(file.name)
-      setImage2(file)
-    } else {
-      setFileName1('No file chosen')
-      setImage2(null)
-    }
-  }
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault()
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
     setLoading(true)
+    setError('')
+    setSuccess('')
 
     const formData = new FormData()
     formData.append('title', title)
@@ -93,30 +87,17 @@ const EditServiceId = () => {
 
     try {
       const token = Cookies.get('adminToken')
-      if (!token) return
+      await axios.post(`https://api.princem-fc.com/api/services/${id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      })
 
-      for (const [key, value] of formData.entries()) {
-        console.log(`${key}:`, value)
-      }
-      const response = await axios.post(
-        `https://api.princem-fc.com/api/services/${id}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-
-      if (response.status === 200) {
-        setSuccess('Services updated successfully!')
-        router.push('/admin/services')
-      } else {
-        setError('Failed to update Services.')
-      }
-    } catch (error: any) {
-      console.error(error)
-      setError(error.response?.data?.message || 'Something went wrong.')
+      setSuccess('Service updated successfully!')
+      setTimeout(() => router.push('/admin/services'), 1500)
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to update service')
     } finally {
       setLoading(false)
     }
@@ -124,151 +105,151 @@ const EditServiceId = () => {
 
   useEffect(() => {
     if (error || success) {
-      const timer = setTimeout(() => {
+      const t = setTimeout(() => {
         setError('')
         setSuccess('')
       }, 5000)
-      return () => clearTimeout(timer)
+      return () => clearTimeout(t)
     }
   }, [error, success])
 
+  if (fetchLoading) {
+    return <div className="min-h-screen bg-[#F2F2F2] flex items-center justify-center">Loading service...</div>
+  }
+
   return (
-    <div className="bg-white min-h-screen flex flex-col pb-[4rem]">
-      <form onSubmit={handleSubmit}>
-        <div className="xl:ml-[27rem] mt-8 bg-[#F2F2F2] flex flex-col px-4 w-[90%] lg:w-[777px] rounded-xl mx-auto mb-8 pb-8 pt-6">
-          <h1 className="font-semibold sm:text-xl text-lg">
-            Edit Service #{id}
-          </h1>
-          <div className="mt-8 flex flex-col">
-            <div className="mt-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-0">
-              <h1 className="text-gray-600 font-semibold">Title</h1>
-              <input
-                type="text"
-                placeholder="Title..."
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="border border-[#EFEFEF] bg-[#F9F9F6] lg:w-[539px] w-full py-[10px] pl-3 focus:outline-none rounded-[5px] text-[#4A5568]"
-                required
-              />
+    <div className="min-h-screen bg-[#F2F2F2] py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-lg p-8">
+          <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-8">Edit Service #{id}</h1>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2">Title</label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2">Price (₦)</label>
+                <input
+                  type="number"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702]"
+                  required
+                />
+              </div>
             </div>
-            <div className="mt-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-0">
-              <h1 className="text-gray-600 font-semibold">Description</h1>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2">Min Price (₦)</label>
+                <input
+                  type="number"
+                  value={min_price}
+                  onChange={(e) => setMin_price(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2">Max Price (₦)</label>
+                <input
+                  type="number"
+                  value={max_price}
+                  onChange={(e) => setMax_price(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702]"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">Description</label>
               <textarea
-                placeholder="Description..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                rows={3}
-                className="border border-[#EFEFEF] bg-[#F9F9F6] lg:w-[539px] w-full py-[10px] pl-3 focus:outline-none rounded-[5px] text-[#4A5568]"
-                required
-              />
-            </div>
-            <div className="mt-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-0">
-              <h1 className="text-gray-600 font-semibold">Price</h1>
-              <input
-                type="number"
-                placeholder="Price..."
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                className="border border-[#EFEFEF] bg-[#F9F9F6] lg:w-[539px] w-full py-[10px] pl-3 focus:outline-none rounded-[5px] text-[#4A5568]"
-                required
-              />
-            </div>
-            <div className="mt-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-0">
-              <h1 className="text-gray-600 font-semibold">Min Price</h1>
-              <input
-                type="number"
-                placeholder="Minimum price..."
-                value={min_price}
-                onChange={(e) => setMin_price(e.target.value)}
-                className="border border-[#EFEFEF] bg-[#F9F9F6] lg:w-[539px] w-full py-[10px] pl-3 focus:outline-none rounded-[5px] text-[#4A5568]"
-                required
-              />
-            </div>
-            <div className="mt-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-0">
-              <h1 className="text-gray-600 font-semibold">Max Price</h1>
-              <input
-                type="number"
-                placeholder="Maximum price..."
-                value={max_price}
-                onChange={(e) => setMax_price(e.target.value)}
-                className="border border-[#EFEFEF] bg-[#F9F9F6] lg:w-[539px] w-full py-[10px] pl-3 focus:outline-none rounded-[5px] text-[#4A5568]"
+                rows={4}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702]"
                 required
               />
             </div>
 
-            {/* Image 1 Upload */}
-            <div className="mt-8 flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-0">
-              <h1 className="text-gray-600 font-semibold">Image 1</h1>
-              <div className="custom-file-input-wrapper overflow-hidden">
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <label className="block text-gray-700 font-semibold mb-3">Image 1</label>
+                {preview1 && (
+                  <div className="mb-4">
+                    <Image
+                      src={preview1}
+                      alt="Preview 1"
+                      width={400}
+                      height={300}
+                      className="rounded-lg object-cover border"
+                      unoptimized
+                    />
+                  </div>
+                )}
                 <input
                   type="file"
                   accept="image/*"
-                  id="service-image1"
-                  name="serviceImage"
-                  onChange={handleFileChange1}
-                  className="hidden"
-                  // required
-                  title="image"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null
+                    handleImageChange(file, setImage1, setPreview1, existingImage1)
+                  }}
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-[#fab702] file:text-white hover:file:bg-yellow-600 cursor-pointer"
                 />
-                <label
-                  htmlFor="service-image1"
-                  className="custom-file-label border border-gray-200 bg-[#F9F9F6] lg:w-[539px] h-[40px] focus:outline-none rounded-[5px] text-[#4A5568] flex items-center cursor-pointer"
-                >
-                  <span className="file-label-text bg-gray-200 h-[40px] px-3 text-black flex items-center whitespace-nowrap">
-                    Choose File
-                  </span>
-                  <span className="file-name text-sm text-gray-500 ml-4">
-                    {fileName}
-                  </span>
-                </label>
+              </div>
+
+              <div>
+                <label className="block text-gray-700 font-semibold mb-3">Image 2</label>
+                {preview2 && (
+                  <div className="mb-4">
+                    <Image
+                      src={preview2}
+                      alt="Preview 2"
+                      width={400}
+                      height={300}
+                      className="rounded-lg object-cover border"
+                      unoptimized
+                    />
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null
+                    handleImageChange(file, setImage2, setPreview2, existingImage2)
+                  }}
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-[#fab702] file:text-white hover:file:bg-yellow-600 cursor-pointer"
+                />
               </div>
             </div>
 
-            {/* Image 2 Upload */}
-            <div className="mt-8 flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-0">
-              <h1 className="text-gray-600 font-semibold">Image 2</h1>
-              <div className="custom-file-input-wrapper overflow-hidden">
-                <input
-                  type="file"
-                  accept="image/*"
-                  id="service-image2"
-                  // name="categoryImage"
-                  onChange={handleFileChange2}
-                  className="hidden"
-                  // required
-                />
-                <label
-                  htmlFor="service-image2"
-                  className="custom-file-label border border-gray-200 bg-[#F9F9F6] lg:w-[539px] h-[40px] focus:outline-none rounded-[5px] text-[#4A5568] flex items-center cursor-pointer"
-                >
-                  <span className="file-label-text bg-gray-200 h-[40px] px-3 text-black flex items-center whitespace-nowrap">
-                    Choose File
-                  </span>
-                  <span className="file-name text-sm text-gray-500 ml-4">
-                    {fileName1}
-                  </span>
-                </label>
-              </div>
+            <div className="flex justify-center pt-6">
+              <button
+                type="submit"
+                disabled={loading}
+                className="px-8 py-3 bg-[#fab702] text-white font-semibold rounded-lg hover:opacity-90 disabled:opacity-70 transition"
+              >
+                {loading ? 'Updating...' : 'Update Service'}
+              </button>
             </div>
-          </div>
+
+            {error && <p className="text-red-600 text-center font-medium">{error}</p>}
+            {success && <p className="text-green-600 text-center font-medium">{success}</p>}
+          </form>
         </div>
-        <button
-          type="submit"
-          className="bg-[#fab702] flex items-center justify-center h-[40px] w-[140px] text-white rounded-[5px] mb-10 text-[14px] font-semibold xl:ml-[27rem] mx-auto hover:text-black hover:opacity-75 active:opacity-55 transition-all duration-500 ease-in-out"
-        >
-          {loading ? 'Submitting...' : 'Submit'}
-        </button>
-        {error && (
-          <p className="text-red-600 xl:text-left xl:ml-[27rem] mt-[-2rem]">
-            {error}
-          </p>
-        )}
-        {success && (
-          <p className="text-green-600 mt-[-2rem] xl:ml-[27rem]  xl:text-left">
-            {success}
-          </p>
-        )}
-      </form>
+      </div>
     </div>
   )
 }

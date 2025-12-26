@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Cookies from 'js-cookie'
 import axios from 'axios'
 
@@ -20,7 +20,7 @@ const AddProject = () => {
       setImageFile(file.name)
       setImage(file)
     } else {
-      setImageFile('No file chosen')
+      setImageFile('No File Chosen')
       setImage(null)
     }
   }
@@ -28,6 +28,8 @@ const AddProject = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     setLoading(true)
+    setError('')
+    setSuccess('')
 
     const formData = new FormData()
     formData.append('title', title)
@@ -37,8 +39,11 @@ const AddProject = () => {
 
     try {
       const token = Cookies.get('adminToken')
-
-      if (!token) return
+      if (!token) {
+        setError('Authentication token not found.')
+        setLoading(false)
+        return
+      }
 
       const response = await axios.post(
         'https://api.princem-fc.com/api/projects',
@@ -46,23 +51,24 @@ const AddProject = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
           },
         }
       )
 
       if (response.status === 200 || response.status === 201) {
-        setSuccess('Project added successfully')
-        setLoading(false)
+        setSuccess('Project added successfully!')
         setTitle('')
         setDescription('')
         setStatus('')
         setImageFile('No File Chosen')
         setImage(null)
       }
-    } catch (error: any) {
+    } catch (err: any) {
+      console.error(err)
+      setError(err.response?.data?.message || 'Failed to add project. Please try again.')
+    } finally {
       setLoading(false)
-      console.error(error)
-      setError(error.response.data.message || 'Invalid credentials.')
     }
   }
 
@@ -72,99 +78,121 @@ const AddProject = () => {
         setError('')
         setSuccess('')
       }, 5000)
-
       return () => clearTimeout(timer)
     }
   }, [error, success])
 
   return (
-    <div className="bg-white flex flex-col pb-[3rem]">
-      <form onSubmit={handleSubmit}>
-        <div className="xl:ml-[27rem] mt-8 bg-[#F2F2F2] flex flex-col px-4 w-[90%] lg:w-[777px] rounded-xl mx-auto mb-8 pb-8">
-          <h1 className="text-xl font-semibold mt-4">Project Information</h1>
+    <div className="min-h-screen bg-[#F2F2F2] py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center lg:text-left">
+          Add New Project
+        </h1>
 
-          {/* Project Title Input */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between mt-4 gap-3 lg:gap-0">
-            <h1 className="font-semibold text-[#4A5568]">Title</h1>
-            <input
-              type="text"
-              placeholder="Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="border border-[#EFEFEF] bg-[#F9F9F6] lg:w-[539px] w-full py-[10px] pl-3 focus:outline-none rounded-[5px] text-[#4A5568]"
-              required
-            />
-          </div>
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between mt-4 gap-3 lg:gap-0">
-            <h1 className="font-semibold text-[#4A5568]">Description</h1>
-            <textarea
-              placeholder="Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="border border-[#EFEFEF] bg-[#F9F9F6] lg:w-[539px] w-full py-[10px] pl-3 focus:outline-none rounded-[5px] text-[#4A5568]"
-              required
-            />
-          </div>
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between mt-4 gap-3 lg:gap-0">
-            <h1 className="font-semibold text-[#4A5568]">Status</h1>
-            <select
-              title='status'
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="border border-[#EFEFEF] bg-[#F9F9F6] lg:w-[539px] w-full py-[10px] pl-3 focus:outline-none rounded-[5px] text-[#4A5568]"
-              required
-            >
-              <option value="" disabled>
-                Select status
-              </option>
-              <option value="ongoing">ongoing</option>
-              <option value="completed">completed</option>
-            </select>
-          </div>
-          {/* First Drag-and-Drop Input - Service Image 1 */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between mt-8 gap-3 lg:gap-0">
-            <h1 className="font-semibold text-[#4A5568]">Image1</h1>
-            <div className="custom-file-input-wrapper">
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-6 lg:p-10">
+          <div className="space-y-8">
+            {/* Title */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+              <label className="font-semibold text-[#4A5568] text-right">
+                Title
+              </label>
               <input
-                type="file"
-                accept="image/*"
-                id="image"
-                onChange={handleFileChange}
-                className="hidden"
-                title="image"
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Enter project title"
+                className="col-span-2 w-full px-4 py-3 border border-[#EFEFEF] bg-[#F9F9F9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702] transition"
                 required
               />
-              <label
-                htmlFor="image"
-                className="custom-file-label border border-gray-200 bg-[#F9F9F6] lg:w-[539px] h-[40px] focus:outline-none rounded-[5px] text-[#4A5568] flex items-center cursor-pointer"
-              >
-                <span className="file-label-text bg-gray-200 h-[40px] px-3 text-black flex items-center">
-                  Choose File
-                </span>
-                <span className="file-name text-sm text-gray-500 ml-4">
-                  {imageFile}
-                </span>
+            </div>
+
+            {/* Description */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+              <label className="font-semibold text-[#4A5568] text-right">
+                Description
               </label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Enter project description"
+                rows={5}
+                className="col-span-2 w-full px-4 py-3 border border-[#EFEFEF] bg-[#F9F9F9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702] transition resize-none"
+                required
+              />
+            </div>
+
+            {/* Status */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+              <label className="font-semibold text-[#4A5568] text-right">
+                Status
+              </label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="col-span-2 w-full px-4 py-3 border border-[#EFEFEF] bg-[#F9F9F9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702] transition"
+                required
+              >
+                <option value="" disabled>
+                  Select status
+                </option>
+                <option value="ongoing">Ongoing</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+
+            {/* Image Upload */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+              <label className="font-semibold text-[#4A5568] text-right">
+                Project Image
+              </label>
+              <div className="col-span-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="project-image"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  required
+                />
+                <label
+                  htmlFor="project-image"
+                  className="flex items-center w-full border-2 border-dashed border-gray-300 bg-[#F9F9F9] rounded-lg cursor-pointer hover:border-[#fab702] hover:bg-gray-50 transition"
+                >
+                  <span className="px-5 py-3 bg-[#fab702] text-white font-medium">
+                    Choose File
+                  </span>
+                  <span className="px-4 py-3 text-gray-600 truncate flex-1 text-left">
+                    {imageFile}
+                  </span>
+                </label>
+              </div>
             </div>
           </div>
-        </div>
-        <button
-          type="submit"
-          className="bg-[#fab702] flex items-center justify-center h-[40px] w-[140px] text-white rounded-[5px] mb-10 text-[14px] font-semibold xl:ml-[27rem] mx-auto hover:text-black hover:opacity-75 active:opacity-55 transition-all duration-500 ease-in-out"
-        >
-          {loading ? 'Submitting...' : 'Submit'}
-        </button>
-        {error && (
-          <p className="text-red-600 text-center xl:text-left xl:ml-[27rem] mt-[-2.5rem]">
-            {error}
-          </p>
-        )}
-        {success && (
-          <p className="text-green-600 mt-[-2.5rem] xl:ml-[27rem] text-center lg:text-left">
-            {success}
-          </p>
-        )}
-      </form>
+
+          {/* Submit Button */}
+          <div className="mt-10 text-center">
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-[#fab702] text-white font-bold px-10 py-4 rounded-lg hover:bg-[#e0a600] active:scale-95 transition disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Submitting...' : 'Add Project'}
+            </button>
+          </div>
+
+          {/* Feedback Messages */}
+          {error && (
+            <p className="mt-6 text-center text-red-600 font-medium bg-red-50 py-3 rounded-lg">
+              {error}
+            </p>
+          )}
+          {success && (
+            <p className="mt-6 text-center text-green-600 font-medium bg-green-50 py-3 rounded-lg">
+              {success}
+            </p>
+          )}
+        </form>
+      </div>
     </div>
   )
 }

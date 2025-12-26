@@ -1,7 +1,7 @@
 'use client'
+
 import Link from 'next/link'
-import { MdOutlineRemoveRedEye } from 'react-icons/md'
-import { MdOutlineEdit } from 'react-icons/md'
+import { MdOutlineRemoveRedEye, MdOutlineEdit } from 'react-icons/md'
 import { RiDeleteBin5Line } from 'react-icons/ri'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
@@ -21,154 +21,163 @@ type ServiceType = {
 const Services = () => {
   const [services, setServices] = useState<ServiceType[]>([])
   const [loading, setLoading] = useState(true)
-  const [success, setSuccess] = useState('')
-
-  const handleDelete = async (id: number) => {
-    try {
-      const token = Cookies.get('adminToken')
-      if (!token) {
-        console.error('No token found')
-        return
-      }
-
-      await axios.delete(`https://api.princem-fc.com/api/services/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      // Remove deleted category from UI
-      setServices((prev) => prev.filter((item) => item.id !== id))
-    } catch (error) {
-      console.error(error)
-    }
-  }
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
-    const fetchService = async () => {
+    const fetchServices = async () => {
       try {
         const token = Cookies.get('adminToken')
-
         if (!token) {
           console.error('No token found')
+          setLoading(false)
           return
         }
 
-        const response = await axios.get(
-          'https://api.princem-fc.com/api/services',
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        const { data } = response.data
-        setServices(data)
+        const response = await axios.get('https://api.princem-fc.com/api/services', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        setServices(response.data.data || response.data) // adjust based on API structure
       } catch (error) {
-        console.error('Error fetching category:', error)
+        console.error('Error fetching services:', error)
+      } finally {
+        setLoading(false)
       }
     }
 
-    fetchService()
+    fetchServices()
   }, [])
 
+  const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this service?')) return
+
+    try {
+      const token = Cookies.get('adminToken')
+      if (!token) return
+
+      await axios.delete(`https://api.princem-fc.com/api/services/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      setServices((prev) => prev.filter((item) => item.id !== id))
+    } catch (error) {
+      console.error('Error deleting service:', error)
+      alert('Failed to delete service')
+    }
+  }
+
+  const filteredServices = services.filter(
+    (service) =>
+      service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.description.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   return (
-    <div className="bg-white min-h-screen w-full flex flex-col pb-[3rem]">
-      <div className="xl:ml-[20rem] mt-8 bg-[#F2F2F2] flex flex-col px-4 w-[90%] lg:w-[1014px] rounded-xl mx-auto mb-8 pb-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mt-4">
-          <h1 className="font-semibold sm:text-xl text-lg">Services </h1>
-          <div className="mt-4">
-            <label className="mr-3">Search</label>
+    <div className="min-h-screen bg-[#F2F2F2] py-8 px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
+          <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
+            Services
+          </h1>
+
+          <div className="flex items-center gap-3">
+            <label htmlFor="search-service" className="text-gray-700 font-medium">
+              Search:
+            </label>
             <input
+              id="search-service"
               type="text"
-              placeholder=""
-              title="search"
-              className="border bg-inherit border-black focus:outline-none pl-2 h-[35px] w-[150px] rounded-[4px]"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Title or description..."
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702] w-full sm:w-64"
             />
           </div>
         </div>
-        <div className="mt-8 overflow-x-auto relative">
-          <table className="min-w-full border-collapse">
-            <thead>
-              <tr className="text-left bg-gray-200 rounded-[6px] text-[#4A5568]">
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">Title</th>
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">
-                  Description
-                </th>
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">Image</th>
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">Image</th>
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">Price</th>
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">
-                  Min Price
-                </th>
-                <th className="lg:px-16 px-8 py-2 whitespace-nowrap">
-                  Max Price
-                </th>
-                <th className="lg:px-16 px-8 py-2">Option</th>
-              </tr>
-            </thead>
-            <tbody>
-              {services.map((item) => (
-                <tr key={item.id} className="even:bg-white odd:bg-[#F2F2F2]">
-                  <td className="lg:px-16 px-8 py-3">
-                    <h1 className="text-md text-[#4A5568] whitespace-nowrap">
-                      {item.title}
-                    </h1>
-                  </td>
-                  <td className="lg:px-16 px-8 py-3">
-                    <h1 className="text-md text-[#4A5568] min-w-[300px]">
-                      {item.description}
-                    </h1>
-                  </td>
-                  <td className="lg:px-16 px-8 py-3">
-                    <div className="w-[150px] h-[100px] flex items-center justify-center rounded-xl">
-                      <img
-                        src={item.image1}
-                        alt="img"
-                        className="h-[80px] w-[180px] object-cover"
-                      />
-                    </div>
-                  </td>
-                  <td className="lg:px-16 px-8 py-3">
-                    <div className="w-[150px] h-[100px] flex items-center justify-center rounded-xl">
-                      <img
-                        src={item.image2}
-                        alt="img"
-                        className="h-[80px] w-[180px] object-cover"
-                      />
-                    </div>
-                  </td>
-                  <td className="lg:px-16 px-8 py-3">
-                    <h1 className="text-md text-[#4A5568] whitespace-nowrap">
-                      ₦{item.price}
-                    </h1>
-                  </td>
-                  <td className="lg:px-16 px-8 py-3">
-                    <h1 className="text-md text-[#4A5568] whitespace-nowrap">
-                      ₦{item.min_price}
-                    </h1>
-                  </td>
-                  <td className="lg:px-16 px-8 py-3">
-                    <h1 className="text-md text-[#4A5568] whitespace-nowrap">
-                      ₦{item.max_price}
-                    </h1>
-                  </td>
-                  <td className="lg:px-16 px-8 py-3 flex mt-9 gap-3">
-                    <Link href={`/admin/services/${item.id}`}>
-                      <MdOutlineRemoveRedEye className="h-[20px] w-[20px] text-purple-400" />
-                    </Link>
-                    <Link href={`/admin/services/edit/${item.id}`}>
-                      <MdOutlineEdit className="h-[20px] w-[20px] text-blue-400" />
-                    </Link>
-                    <RiDeleteBin5Line
-                      onClick={() => handleDelete(item.id)}
-                      className="h-[20px] w-[20px] text-red-400 cursor-pointer"
-                    />
-                  </td>
+
+        {/* Table */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full table-auto">
+              <thead className="bg-gray-100 text-gray-700">
+                <tr>
+                  <th className="px-4 py-3 text-left font-semibold">Title</th>
+                  <th className="px-4 py-3 text-left font-semibold">Description</th>
+                  <th className="px-4 py-3 text-center font-semibold">Image 1</th>
+                  <th className="px-4 py-3 text-center font-semibold">Image 2</th>
+                  <th className="px-4 py-3 text-center font-semibold">Price</th>
+                  <th className="px-4 py-3 text-center font-semibold">Min Price</th>
+                  <th className="px-4 py-3 text-center font-semibold">Max Price</th>
+                  <th className="px-4 py-3 text-center font-semibold">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {loading ? (
+                  <tr>
+                    <td colSpan={8} className="text-center py-12 text-gray-500">
+                      Loading services...
+                    </td>
+                  </tr>
+                ) : filteredServices.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="text-center py-12 text-gray-500">
+                      {searchTerm ? 'No matching services found' : 'No services available'}
+                    </td>
+                  </tr>
+                ) : (
+                  filteredServices.map((item) => (
+                    <tr key={item.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-4 max-w-xs">
+                        <p className="font-medium truncate">{item.title}</p>
+                      </td>
+                      <td className="px-4 py-4 max-w-md">
+                        <p className="text-gray-600 truncate">{item.description}</p>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex justify-center">
+                          <img
+                            src={item.image1 || '/placeholder.jpg'}
+                            alt="Service 1"
+                            className="w-32 h-20 object-cover rounded-lg border"
+                            onError={(e) => (e.currentTarget.src = '/placeholder.jpg')}
+                          />
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex justify-center">
+                          <img
+                            src={item.image2 || '/placeholder.jpg'}
+                            alt="Service 2"
+                            className="w-32 h-20 object-cover rounded-lg border"
+                            onError={(e) => (e.currentTarget.src = '/placeholder.jpg')}
+                          />
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-center">₦{item.price}</td>
+                      <td className="px-4 py-4 text-center">₦{item.min_price}</td>
+                      <td className="px-4 py-4 text-center">₦{item.max_price}</td>
+                      <td className="px-4 py-4">
+                        <div className="flex justify-center gap-4">
+                          <Link href={`/admin/services/${item.id}`} className="text-purple-600 hover:text-purple-800">
+                            <MdOutlineRemoveRedEye className="h-5 w-5" />
+                          </Link>
+                          <Link href={`/admin/services/edit/${item.id}`} className="text-blue-600 hover:text-blue-800">
+                            <MdOutlineEdit className="h-5 w-5" />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            <RiDeleteBin5Line className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

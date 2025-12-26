@@ -1,9 +1,10 @@
 'use client'
-import { useParams } from 'next/navigation'
-import { testimonial } from '../../utils/testimonials'
+
+import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
 import axios from 'axios'
+import { MdOutlineEdit } from 'react-icons/md'
 
 type TestimonialData = {
   id: number
@@ -13,64 +14,103 @@ type TestimonialData = {
 }
 
 const TestimonialId = () => {
-  const {id: testimonialId} = useParams()
+  const { id } = useParams()
+  const router = useRouter()
   const [testimonial, setTestimonial] = useState<TestimonialData | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchTestimonialId = async () => {
-      const token = Cookies.get('adminToken')
-      if (!token) return
+    const fetchTestimonial = async () => {
+      if (!id) return
 
       try {
-        const response = await axios.get(
-          `https://api.princem-fc.com/api/testimonials/${testimonialId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        )
+        const token = Cookies.get('adminToken')
+        if (!token) {
+          console.error('No authentication token')
+          setLoading(false)
+          return
+        }
 
-        const {data} = response
+        const response = await axios.get(`https://api.princem-fc.com/api/testimonials/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+
+        // Adjust based on your API structure
+        const data = response.data.data || response.data
         setTestimonial(data)
       } catch (error) {
-        console.error(error)
+        console.error('Error fetching testimonial:', error)
+      } finally {
+        setLoading(false)
       }
     }
 
-    if (testimonialId) fetchTestimonialId()
-  }, [testimonialId])
+    fetchTestimonial()
+  }, [id])
+
+  const handleEdit = () => {
+    router.push(`/admin/testimonial/edit/${id}`)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <p className="text-lg text-gray-600">Loading testimonial...</p>
+      </div>
+    )
+  }
+
+  if (!testimonial) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <p className="text-xl text-red-600">Testimonial not found</p>
+      </div>
+    )
+  }
 
   return (
-    <div className="bg-white flex flex-col h-[100vh]">
-      <div className="xl:ml-[20rem] mt-8 bg-[#F2F2F2] flex flex-col px-4 w-[90%] lg:w-[1014px] rounded-xl mx-auto mb-8 pb-8 overflow-x-auto">
-        {testimonial ? (
-          <>
-            <div className="mt-4">
-              <h1 className="font-semibold sm:text-xl text-lg">
-                Testimonial #{testimonialId}
-              </h1>
-            </div>
-            <div className="mt-4 flex flex-col">
-              <div className="flex gap-4">
-                <h1 className="sm:text-xl font-semibold">Name:</h1>
-                <h1 className="text-gray-600 text-lg whitespace-nowrap">
-                  {testimonial.name}
-                </h1>
+    <div className="max-w-4xl mx-auto">
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div className="p-8">
+          {/* Header with Title and Edit Button */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-10">
+            <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
+              Testimonial #{testimonial.id}
+            </h1>
+
+            <button
+              onClick={handleEdit}
+              className="mt-4 sm:mt-0 inline-flex items-center gap-2 px-6 py-3 bg-[#fab702] text-white font-semibold rounded-lg hover:opacity-90 transition shadow-md"
+            >
+              <MdOutlineEdit className="h-5 w-5" />
+              Edit Testimonial
+            </button>
+          </div>
+
+          <div className="space-y-8">
+            {/* User ID & Name */}
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <p className="text-sm font-medium text-gray-600 uppercase tracking-wider">User ID</p>
+                <p className="mt-2 text-xl font-semibold text-gray-900">{testimonial.user_id}</p>
               </div>
-              <div className="flex items-center gap-4 mt-4">
-                <h1 className="sm:text-xl font-semibold">Review:</h1>
-                <h1 className="text-gray-600 lg:w-[400px] w-[700px] text-">
-                  {testimonial.review}
-                </h1>
+              <div>
+                <p className="text-sm font-medium text-gray-600 uppercase tracking-wider">Name</p>
+                <p className="mt-2 text-xl font-semibold text-gray-900">{testimonial.name}</p>
               </div>
             </div>
-          </>
-        ) : (
-          <h1 className="text-gray-600 text-lg text-center mt-8">
-            Testimonial not found.
-          </h1>
-        )}
+
+            {/* Review */}
+            <div>
+              <p className="text-sm font-medium text-gray-600 uppercase tracking-wider mb-3">Review</p>
+              <div className="bg-gray-50 p-6 rounded-xl">
+                <p className="text-gray-800 text-lg leading-relaxed whitespace-pre-wrap">
+                  "{testimonial.review}"
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

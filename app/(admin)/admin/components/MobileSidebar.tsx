@@ -17,7 +17,7 @@ import ProjectDropdown from './projects/ProjectDropdown'
 
 const MobileSidebar = () => {
   const dispatch = useAppDispatch()
-  const sidebar = useAppSelector((state) => state.mobileSidebar.mobileSidebar)
+  const isOpen = useAppSelector((state) => state.mobileSidebar.mobileSidebar)
 
   const handleCloseSidebar = () => {
     dispatch(closeSidebar())
@@ -25,43 +25,62 @@ const MobileSidebar = () => {
 
   return (
     <AnimatePresence>
-      {sidebar && (
-        <motion.div
-          initial={{ x: '-100%' }}
-          animate={{ x: 0 }}
-          exit={{ x: '-100%' }}
-          transition={{ duration: 0.5, ease: 'easeInOut' }}
-          className="bg-white w-[300px] xl:hidden flex-col flex fixed top-2 bottom-2 left-3 rounded-xl shadow-lg z-10"
-        >
-          <div className="fixed h-[120px] w-[300px] flex items-center justify-between px-8">
-            <h1 className="text-2xl font-semibold">PMFC</h1>
-            <FaXmark
-              onClick={() => handleCloseSidebar()}
-              className="h-[30px] w-[30px]"
-            />
-          </div>
-          <div className="flex flex-col items-start ml-8 mt-[130px] gap-4">
-            <div className="flex items-center justify-between w-[230px]">
-              <Link
-                onClick={() => handleCloseSidebar()}
-                href={'/admin'}
-                className="flex flex-row items-center justify-between gap-8"
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleCloseSidebar}
+            className="fixed inset-0 bg-black/50 z-40 xl:hidden"
+          />
+
+          {/* Sidebar Panel */}
+          <motion.div
+            initial={{ x: '-100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '-100%' }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            className="fixed inset-y-2 left-3 w-[300px] bg-white rounded-xl shadow-2xl z-50 flex flex-col xl:hidden"
+          >
+            {/* Header */}
+            <div className="h-[120px] flex items-center justify-between px-8 border-b">
+              <h1 className="text-2xl font-semibold">PMFC</h1>
+              <button
+                onClick={handleCloseSidebar}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                aria-label="Close menu"
               >
-                <MdSpaceDashboard className="h-[20px] w-[20px]" />
-                <h1>Dashboard</h1>
-              </Link>
+                <FaXmark className="h-7 w-7 text-gray-700" />
+              </button>
             </div>
-            <ProductDropdown />
-            <CategoryDropdown />   
-            <TrainingDropdown />
-            <OrderDropdown />
-            <TrainingProgramDropdown />
-            <EnrollmentDropdown />
-            <QuotationDropdown />
-            <ServiceDropdown />
-            <ProjectDropdown />
-          </div>
-        </motion.div>
+
+            {/* Navigation */}
+            <div className="flex-1 overflow-y-auto px-6 pt-6 pb-8">
+              <nav className="space-y-4">
+                <Link
+                  onClick={handleCloseSidebar}
+                  href="/admin"
+                  className="flex items-center gap-4 py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <MdSpaceDashboard className="h-6 w-6 text-gray-700" />
+                  <span className="text-lg font-medium">Dashboard</span>
+                </Link>
+
+                <ProductDropdown />
+                <CategoryDropdown />
+                <TrainingDropdown />
+                <OrderDropdown />
+                <TrainingProgramDropdown />
+                <EnrollmentDropdown />
+                <QuotationDropdown />
+                <ServiceDropdown />
+                <ProjectDropdown />
+              </nav>
+            </div>
+          </motion.div>
+        </>
       )}
     </AnimatePresence>
   )
