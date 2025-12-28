@@ -227,7 +227,7 @@ const EditQuotation = () => {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={6}
-              placeholder="Customer's full message or project requirements..."
+              placeholder="Customers full message or project requirements..."
               className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702] transition resize-none"
               required
             />

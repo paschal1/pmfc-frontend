@@ -35,7 +35,6 @@ const TestimonialId = () => {
           headers: { Authorization: `Bearer ${token}` },
         })
 
-        // Adjust based on your API structure
         const data = response.data.data || response.data
         setTestimonial(data)
       } catch (error) {
@@ -105,7 +104,7 @@ const TestimonialId = () => {
               <p className="text-sm font-medium text-gray-600 uppercase tracking-wider mb-3">Review</p>
               <div className="bg-gray-50 p-6 rounded-xl">
                 <p className="text-gray-800 text-lg leading-relaxed whitespace-pre-wrap">
-                  "{testimonial.review}"
+                  &ldquo;{testimonial.review}&rdquo;
                 </p>
               </div>
             </div>

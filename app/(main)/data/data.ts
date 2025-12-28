@@ -25,7 +25,7 @@ export const data: DataItem[] = [
     title1: 'Office',
     title2: 'Design',
     content:
-      "Establishing a conducive and efficient workspace that aligns with the organization's objectives. It encompasses creating a functional and well-organized environment that enhances productivity, supports effective collaboration, and prioritizes employee well-being and motivation.",
+      "Establishing a conducive and efficient workspace that aligns with the organizations objectives. It encompasses creating a functional and well-organized environment that enhances productivity, supports effective collaboration, and prioritizes employee well-being and motivation.",
     image: "/pic_2.jpg",
   },
   {

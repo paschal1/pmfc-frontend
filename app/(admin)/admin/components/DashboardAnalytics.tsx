@@ -160,7 +160,7 @@ const DashboardAnalytics = ({ data }: AnalyticsDataProps) => {
                 {/* Today */}
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div>
-                    <p className="text-sm text-[#9A9A9A]">Today's Sales</p>
+                    <p className={`text-sm text-[#9A9A9A]`}>Today{"'"}s Sales</p>
                     <p className="text-2xl font-bold text-[#4A5568]">{formatCurrency(salesReports.today_sales)}</p>
                   </div>
                   <div className="bg-blue-100 p-2 rounded-lg">
