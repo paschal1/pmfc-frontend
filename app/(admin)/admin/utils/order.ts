@@ -1,201 +1,243 @@
+// export interface OrderData {
+//   id: number
+//   image: string
+//   code: number
+//   date: string
+//   payment_method: string
+//   status: string
+//   amount: number
+//   shipping_address: string
+//   shipping_state: string
+//   shipping_city: string
+//   shipping_zip_code: number
+//   shipping: number
+//   tax: number
+//   name: string
+//   quantity: number
+//   orderId: number
+// }
+
+// export const order: OrderData[] = [
+//   {
+//     id: 0,
+//     image: '/img1.jpg',
+//     code: 102345,
+//     date: '2024-02-06',
+//     payment_method: 'Bank Transfer',
+//     status: 'Delivered',
+//     amount: 15000,
+//     shipping_address: '12, Adeniran Ogunsanya Street',
+//     shipping_state: 'Lagos',
+//     shipping_city: 'Surulere',
+//     shipping_zip_code: 101283,
+//     shipping: 20000,
+//     tax: 3000,
+//     name: 'Triple Seat Sofa',
+//     quantity: 2,
+//     orderId: 6849392994939349,
+//   },
+//   {
+//     id: 1,
+//     image: '/img2.jpg',
+//     code: 102346,
+//     date: '2024-02-05',
+//     payment_method: 'Cash on Delivery',
+//     status: 'Pending',
+//     amount: 22000,
+//     shipping_address: '45, Olusegun Obasanjo Way',
+//     shipping_state: 'Abuja',
+//     shipping_city: 'Garki',
+//     shipping_zip_code: 900001,
+//     shipping: 40000,
+//     tax: 3000,
+//     name: 'Single Seat Sofa',
+//     quantity: 4,
+//     orderId: 6849392923339349,
+//   },
+//   {
+//     id: 2,
+//     image: '/img3.jpg',
+//     code: 102347,
+//     date: '2024-02-04',
+//     payment_method: 'USSD',
+//     status: 'Cancelled',
+//     amount: 5000,
+//     shipping_address: '18, Herbert Macaulay Road',
+//     shipping_state: 'Kano',
+//     shipping_city: 'Kano Municipal',
+//     shipping_zip_code: 700231,
+//     shipping: 50000,
+//     tax: 3000,
+//     name: 'Triple Seat Sofa',
+//     quantity: 1,
+//     orderId: 6341392994939349,
+//   },
+//   {
+//     id: 3,
+//     image: '/img4.jpg',
+//     code: 102348,
+//     date: '2024-02-03',
+//     payment_method: 'Credit Card',
+//     status: 'Pending',
+//     amount: 7500,
+//     shipping_address: '7, Aba Road',
+//     shipping_state: 'Rivers',
+//     shipping_city: 'Port Harcourt',
+//     shipping_zip_code: 500102,
+//     shipping: 30000,
+//     tax: 3000,
+//     name: 'Multifunction Bed Red',
+//     quantity: 2,
+//     orderId: 6849392994939765,
+//   },
+//   {
+//     id: 4,
+//     image: '/img5.jpg',
+//     code: 102349,
+//     date: '2024-02-02',
+//     payment_method: 'POS',
+//     status: 'Delivered',
+//     amount: 18000,
+//     shipping_address: '24, Ogba Road',
+//     shipping_state: 'Lagos',
+//     shipping_city: 'Ikeja',
+//     shipping_zip_code: 100271,
+//     shipping: 50000,
+//     tax: 3000,
+//     name: 'Minimalist Corner Desk',
+//     quantity: 1,
+//     orderId: 6849392994932113,
+//   },
+//   {
+//     id: 5,
+//     image: '/img6.jpg',
+//     code: 102350,
+//     date: '2024-02-01',
+//     payment_method: 'Bank Transfer',
+//     status: 'Pending',
+//     amount: 13000,
+//     shipping_address: '15, New Layout Road',
+//     shipping_state: 'Enugu',
+//     shipping_city: 'Enugu',
+//     shipping_zip_code: 400001,
+//     shipping: 70000,
+//     tax: 3000,
+//     name: 'Decorative Fabric Sofa',
+//     quantity: 3,
+//     orderId: 6849387324939349,
+//   },
+//   {
+//     id: 6,
+//     image: '/img7.jpg',
+//     code: 102351,
+//     date: '2024-01-31',
+//     payment_method: 'Cash on Delivery',
+//     status: 'Pending',
+//     amount: 25000,
+//     shipping_address: '32, Sango-Ota Road',
+//     shipping_state: 'Ogun',
+//     shipping_city: 'Abeokuta',
+//     shipping_zip_code: 110102,
+//     shipping: 40000,
+//     tax: 3000,
+//     name: 'Artistic Wood Hanger',
+//     quantity: 4,
+//     orderId: 900392994939349,
+//   },
+//   {
+//     id: 7,
+//     image: '/img8.jpg',
+//     code: 102352,
+//     date: '2024-01-30',
+//     payment_method: 'USSD',
+//     status: 'Cancelled',
+//     amount: 8000,
+//     shipping_address: '88, Iwo Road',
+//     shipping_state: 'Oyo',
+//     shipping_city: 'Ibadan',
+//     shipping_zip_code: 200252,
+//     shipping: 50000,
+//     tax: 3000,
+//     name: 'Classic Wood Chair',
+//     quantity: 1,
+//     orderId: 8776392994939349,
+//   },
+//   {
+//     id: 8,
+//     image: '/img9.jpg',
+//     code: 102353,
+//     date: '2024-01-29',
+//     payment_method: 'Credit Card',
+//     status: 'Delivered',
+//     amount: 14500,
+//     shipping_address: '56, Zik Avenue',
+//     shipping_state: 'Anambra',
+//     shipping_city: 'Awka',
+//     shipping_zip_code: 420111,
+//     shipping: 70000,
+//     tax: 3000,
+//     name: 'White Blue Bed',
+//     quantity: 2,
+//     orderId: 6849392978839349,
+//   },
+//   {
+//     id: 9,
+//     image: '/img10.jpg',
+//     code: 102354,
+//     date: '2024-01-28',
+//     payment_method: 'POS',
+//     status: 'Pending',
+//     amount: 32000,
+//     shipping_address: '5, Benin-Sapele Road',
+//     shipping_state: 'Edo',
+//     shipping_city: 'Benin City',
+//     shipping_zip_code: 300283,
+//     shipping: 20000,
+//     tax: 3000,
+//     name: 'Woven Dinning Chair',
+//     quantity: 1,
+//     orderId: 6849392994933727,
+//   },
+// ]
+
 export interface OrderData {
   id: number
-  image: string
-  code: number
-  date: string
+  user_id: number
+  total_price: string
+  fullname: string | null
+  email: string | null
   payment_method: string
+  payment_type: string
+  deposit_amount: string | null
+  remaining_amount: string | null
   status: string
-  amount: number
+  payment_status: string
+  tracking_number: string
+  transaction_id: string | null
+  order_date: string
   shipping_address: string
-  shipping_state: string
-  shipping_city: string
-  shipping_zip_code: number
-  shipping: number
-  tax: number
-  name: string
-  quantity: number
-  orderId: number
+  shipping_state: string | null
+  shipping_city: string | null
+  shipping_zip_code: string | null
+  created_at: string
+  updated_at: string
+  product_id: number | null
+  quantity: number | null
+  user: {
+    id: number
+    name: string
+    email: string
+    phone: string
+    address: string
+  }
+  product: {
+    id: number
+    name: string
+    description: string
+    price: string
+    stock: number
+    image: string
+    thumbnailImage: string | null
+    category_id: number
+  } | null
 }
-
-export const order: OrderData[] = [
-  {
-    id: 0,
-    image: '/img1.jpg',
-    code: 102345,
-    date: '2024-02-06',
-    payment_method: 'Bank Transfer',
-    status: 'Delivered',
-    amount: 15000,
-    shipping_address: '12, Adeniran Ogunsanya Street',
-    shipping_state: 'Lagos',
-    shipping_city: 'Surulere',
-    shipping_zip_code: 101283,
-    shipping: 20000,
-    tax: 3000,
-    name: 'Triple Seat Sofa',
-    quantity: 2,
-    orderId: 6849392994939349,
-  },
-  {
-    id: 1,
-    image: '/img2.jpg',
-    code: 102346,
-    date: '2024-02-05',
-    payment_method: 'Cash on Delivery',
-    status: 'Pending',
-    amount: 22000,
-    shipping_address: '45, Olusegun Obasanjo Way',
-    shipping_state: 'Abuja',
-    shipping_city: 'Garki',
-    shipping_zip_code: 900001,
-    shipping: 40000,
-    tax: 3000,
-    name: 'Single Seat Sofa',
-    quantity: 4,
-    orderId: 6849392923339349,
-  },
-  {
-    id: 2,
-    image: '/img3.jpg',
-    code: 102347,
-    date: '2024-02-04',
-    payment_method: 'USSD',
-    status: 'Cancelled',
-    amount: 5000,
-    shipping_address: '18, Herbert Macaulay Road',
-    shipping_state: 'Kano',
-    shipping_city: 'Kano Municipal',
-    shipping_zip_code: 700231,
-    shipping: 50000,
-    tax: 3000,
-    name: 'Triple Seat Sofa',
-    quantity: 1,
-    orderId: 6341392994939349,
-  },
-  {
-    id: 3,
-    image: '/img4.jpg',
-    code: 102348,
-    date: '2024-02-03',
-    payment_method: 'Credit Card',
-    status: 'Pending',
-    amount: 7500,
-    shipping_address: '7, Aba Road',
-    shipping_state: 'Rivers',
-    shipping_city: 'Port Harcourt',
-    shipping_zip_code: 500102,
-    shipping: 30000,
-    tax: 3000,
-    name: 'Multifunction Bed Red',
-    quantity: 2,
-    orderId: 6849392994939765,
-  },
-  {
-    id: 4,
-    image: '/img5.jpg',
-    code: 102349,
-    date: '2024-02-02',
-    payment_method: 'POS',
-    status: 'Delivered',
-    amount: 18000,
-    shipping_address: '24, Ogba Road',
-    shipping_state: 'Lagos',
-    shipping_city: 'Ikeja',
-    shipping_zip_code: 100271,
-    shipping: 50000,
-    tax: 3000,
-    name: 'Minimalist Corner Desk',
-    quantity: 1,
-    orderId: 6849392994932113,
-  },
-  {
-    id: 5,
-    image: '/img6.jpg',
-    code: 102350,
-    date: '2024-02-01',
-    payment_method: 'Bank Transfer',
-    status: 'Pending',
-    amount: 13000,
-    shipping_address: '15, New Layout Road',
-    shipping_state: 'Enugu',
-    shipping_city: 'Enugu',
-    shipping_zip_code: 400001,
-    shipping: 70000,
-    tax: 3000,
-    name: 'Decorative Fabric Sofa',
-    quantity: 3,
-    orderId: 6849387324939349,
-  },
-  {
-    id: 6,
-    image: '/img7.jpg',
-    code: 102351,
-    date: '2024-01-31',
-    payment_method: 'Cash on Delivery',
-    status: 'Pending',
-    amount: 25000,
-    shipping_address: '32, Sango-Ota Road',
-    shipping_state: 'Ogun',
-    shipping_city: 'Abeokuta',
-    shipping_zip_code: 110102,
-    shipping: 40000,
-    tax: 3000,
-    name: 'Artistic Wood Hanger',
-    quantity: 4,
-    orderId: 900392994939349,
-  },
-  {
-    id: 7,
-    image: '/img8.jpg',
-    code: 102352,
-    date: '2024-01-30',
-    payment_method: 'USSD',
-    status: 'Cancelled',
-    amount: 8000,
-    shipping_address: '88, Iwo Road',
-    shipping_state: 'Oyo',
-    shipping_city: 'Ibadan',
-    shipping_zip_code: 200252,
-    shipping: 50000,
-    tax: 3000,
-    name: 'Classic Wood Chair',
-    quantity: 1,
-    orderId: 8776392994939349,
-  },
-  {
-    id: 8,
-    image: '/img9.jpg',
-    code: 102353,
-    date: '2024-01-29',
-    payment_method: 'Credit Card',
-    status: 'Delivered',
-    amount: 14500,
-    shipping_address: '56, Zik Avenue',
-    shipping_state: 'Anambra',
-    shipping_city: 'Awka',
-    shipping_zip_code: 420111,
-    shipping: 70000,
-    tax: 3000,
-    name: 'White Blue Bed',
-    quantity: 2,
-    orderId: 6849392978839349,
-  },
-  {
-    id: 9,
-    image: '/img10.jpg',
-    code: 102354,
-    date: '2024-01-28',
-    payment_method: 'POS',
-    status: 'Pending',
-    amount: 32000,
-    shipping_address: '5, Benin-Sapele Road',
-    shipping_state: 'Edo',
-    shipping_city: 'Benin City',
-    shipping_zip_code: 300283,
-    shipping: 20000,
-    tax: 3000,
-    name: 'Woven Dinning Chair',
-    quantity: 1,
-    orderId: 6849392994933727,
-  },
-]
