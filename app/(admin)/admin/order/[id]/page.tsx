@@ -6,6 +6,8 @@ import { getOrderById } from '../../../../services/api'
 import { OrderData } from '../../utils/order'
 import Cookies from 'js-cookie'
 import Image from 'next/image'
+import Link from 'next/link'
+import { IoMdTime } from 'react-icons/io'
 
 const OrderId = () => {
   const params = useParams()
@@ -339,9 +341,13 @@ const OrderId = () => {
               )}
 
               {/* Track Order Button */}
-              <button className="w-full py-3 bg-[#fab702] text-white font-semibold rounded-lg hover:opacity-90 transition shadow-md">
+              <Link
+                href={`/admin/order/tracking/${order.id}`}
+                className="w-full py-3 bg-[#fab702] text-white font-semibold rounded-lg hover:opacity-90 transition shadow-md flex items-center justify-center gap-2"
+              >
+                <IoMdTime className="h-5 w-5" />
                 Track Order
-              </button>
+              </Link>
             </div>
           </div>
         </div>

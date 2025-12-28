@@ -1,64 +1,115 @@
-import { BiSolidDownArrow } from 'react-icons/bi'
-import { bestSellingData, BestSellingItem } from '../utils/bestSelling'
+// app/dashboard/components/DashboardRecentOrder.tsx
 
-const DashboardRecentOrder = () => {
+import { BiSolidDownArrow } from 'react-icons/bi'
+
+interface RecentOrder {
+  order_id: number
+  product_id: number
+  image: string
+  name: string
+  price: number
+  orders: number
+  stock: number
+  amount: number
+  date: string
+}
+
+interface DashboardRecentOrderProps {
+  orders: RecentOrder[]
+}
+
+const DashboardRecentOrder = ({ orders }: DashboardRecentOrderProps) => {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+
   return (
     <div
       data-testid="dashboard-recent-order"
-     className="bg-[#F2F2F2] w-full max-w-6xl mt-8 mx-auto rounded-xl flex flex-col px-4 sm:px-7 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 ease-in-out"
+      className="bg-[#F2F2F2] w-full max-w-6xl mt-8 mx-auto rounded-xl flex flex-col px-4 sm:px-7 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 ease-in-out"
     >
       <div className="flex items-center justify-between mt-4">
         <h1 className="text-lg font-semibold text-[#4A5568]">Recent Orders</h1>
         <div className="lg:flex hidden items-center gap-2">
           <h1 className="font-semibold">Sort By:</h1>
-          <h1 className="text-[#4A5568]">Today</h1>
+          <h1 className="text-[#4A5568]">Latest</h1>
           <BiSolidDownArrow className="h-[9px] w-[9px] text-[#4A5568] cursor-pointer" />
         </div>
       </div>
       <div className="w-full h-[1px] mt-3 bg-gray-300 mb-8"></div>
-      <div className="overflow-x-auto relative">
-        <table className="min-w-full border-collapse">
-          {/* Table Header */}
-          <thead>
-            <tr className="text-left bg-gray-100">
-              <th className="px-4 py-2">Image</th>
-              <th className="px-4 py-2">Name</th>
-              <th className="px-4 py-2">Price</th>
-              <th className="px-4 py-2">Orders</th>
-              <th className="px-4 py-2">Stock</th>
-              <th className="px-4 py-2">Amount</th>
-              <th className="px-4 py-2">Date</th>
-            </tr>
-          </thead>
-          {/* Table Body */}
-          <tbody>
-            {bestSellingData.map((item) => (
-              <tr key={item.id} className="border-b last:border-b-0">
-                {/* Image */}
-                <td className="px-4 py-3">
-                  <div className="w-[80px] h-[80px] bg-gray-200 flex items-center justify-center rounded-xl">
-                    <img
-                      src={item.image}
-                      alt="img"
-                      className="h-[60px] w-[60px] object-contain"
-                    />
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <h1 className="text-lg font-medium">{item.name}</h1>
-                </td>
-                <td className="px-4 py-3 text-[#4A5568]">${item.price}</td>
-                <td className="px-4 py-3 text-[#4A5568]">{item.orders}</td>
-                <td className="px-4 py-3 text-[#4A5568]">{item.stock}</td>
-                <td className="px-4 py-3 text-[#4A5568]">${item.amount}</td>
-                <td className="px-4 py-3 text-[#4A5568] whitespace-nowrap">
-                  {item.date}
-                </td>
+      
+      {orders.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">
+          No recent orders available
+        </div>
+      ) : (
+        <div className="overflow-x-auto relative pb-4">
+          <table className="min-w-full border-collapse">
+            <thead>
+              <tr className="text-left bg-gray-100">
+                <th className="px-4 py-2 text-sm font-semibold">Order ID</th>
+                <th className="px-4 py-2 text-sm font-semibold">Image</th>
+                <th className="px-4 py-2 text-sm font-semibold">Name</th>
+                <th className="px-4 py-2 text-sm font-semibold">Price</th>
+                <th className="px-4 py-2 text-sm font-semibold">Quantity</th>
+                <th className="px-4 py-2 text-sm font-semibold">Stock</th>
+                <th className="px-4 py-2 text-sm font-semibold">Amount</th>
+                <th className="px-4 py-2 text-sm font-semibold">Date</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {orders.map((item, index) => (
+                <tr key={`${item.order_id}-${item.product_id}-${index}`} className="border-b last:border-b-0 hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-3">
+                    <span className="text-sm font-mono text-[#4A5568] bg-blue-50 px-2 py-1 rounded">
+                      #{item.order_id}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="w-[80px] h-[80px] bg-gray-200 flex items-center justify-center rounded-xl overflow-hidden">
+                      <img
+                        src={item.image || '/placeholder-product.png'}
+                        alt={item.name}
+                        className="h-[60px] w-[60px] object-contain"
+                        onError={(e) => {
+                          e.currentTarget.src = '/placeholder-product.png'
+                        }}
+                      />
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <h1 className="text-base font-medium text-[#333333]">{item.name}</h1>
+                  </td>
+                  <td className="px-4 py-3 text-[#4A5568]">
+                    N{item.price.toFixed(2)}
+                  </td>
+                  <td className="px-4 py-3 text-[#4A5568] font-medium">
+                    {item.orders}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`${item.stock < 10 ? 'text-red-600 font-semibold' : 'text-[#4A5568]'}`}>
+                      {item.stock}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-[#4A5568] font-semibold">
+                    N{item.amount.toFixed(2)}
+                  </td>
+                  <td className="px-4 py-3 text-[#4A5568] whitespace-nowrap text-sm">
+                    {formatDate(item.date)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   )
 }

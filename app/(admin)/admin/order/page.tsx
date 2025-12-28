@@ -1,6 +1,7 @@
 'use client'
 
 import { MdOutlineRemoveRedEye } from 'react-icons/md'
+import { IoMdTime } from 'react-icons/io'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { getOrders } from '../../../services/api'
@@ -249,13 +250,20 @@ const Order = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center justify-center">
+                      <div className="flex items-center justify-center gap-3">
                         <Link
                           href={`/admin/order/${item.id}`}
                           className="text-purple-600 hover:text-purple-800 transition-colors"
                           title="View order details"
                         >
                           <MdOutlineRemoveRedEye className="h-5 w-5" />
+                        </Link>
+                        <Link
+                          href={`/admin/order/tracking/${item.id}`}
+                          className="text-blue-600 hover:text-blue-800 transition-colors"
+                          title="Track order"
+                        >
+                          <IoMdTime className="h-5 w-5" />
                         </Link>
                       </div>
                     </td>

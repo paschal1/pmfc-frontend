@@ -76,4 +76,30 @@ export const deleteOrder = async (id: number) => {
   }
 }
 
+// Add this function to your existing api.ts file
+
+export const updateOrderStatus = async (orderId: number, status: string) => {
+  try {
+    const response = await apiClient.put(`/orders/${orderId}/status`, { status })
+    return response.data
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message || error.response?.data?.error || 'Failed to update order status')
+    }
+    throw new Error('Failed to update order status')
+  }
+}
+
+export const cancelOrder = async (orderId: number) => {
+  try {
+    const response = await apiClient.post(`/orders/${orderId}/cancel`)
+    return response.data
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message || error.response?.data?.error || 'Failed to cancel order')
+    }
+    throw new Error('Failed to cancel order')
+  }
+}
+
 export default apiClient
