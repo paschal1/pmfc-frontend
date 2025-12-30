@@ -27,7 +27,7 @@ const TrainingProgram = () => {
   useEffect(() => {
     const fetchPrograms = async () => {
       try {
-        const token = Cookies.get('adminToken')
+        const token = Cookies.get('userToken')
         if (!token) {
           console.error('No authentication token')
           setLoading(false)
@@ -55,7 +55,7 @@ const TrainingProgram = () => {
     if (!confirm('Are you sure you want to delete this training program?')) return
 
     try {
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       if (!token) return
 
       await axios.delete(`https://api.princem-fc.com/api/training-programs/${id}`, {

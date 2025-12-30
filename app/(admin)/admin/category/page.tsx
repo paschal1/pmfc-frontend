@@ -28,7 +28,7 @@ const Category = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const token = Cookies.get('adminToken')
+        const token = Cookies.get('userToken')
         if (!token) {
           console.error('No authentication token')
           setLoading(false)
@@ -59,7 +59,7 @@ const Category = () => {
     }
 
     try {
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       if (!token) return
 
       await axios.delete(`https://api.princem-fc.com/api/categories/${id}`, {

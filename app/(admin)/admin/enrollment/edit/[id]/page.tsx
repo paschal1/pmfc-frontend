@@ -28,7 +28,7 @@ const EditEnrollmentId = () => {
       if (!id) return
 
       try {
-        const token = Cookies.get('adminToken')
+        const token = Cookies.get('userToken')
         if (!token) {
           router.push('/admin/login')
           return
@@ -83,7 +83,7 @@ const EditEnrollmentId = () => {
     }
 
     try {
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       if (!token) throw new Error('No authentication')
 
       // Using POST with _method=PUT if your backend uses Laravel-style method spoofing

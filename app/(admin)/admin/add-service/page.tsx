@@ -55,7 +55,7 @@ const AddService = () => {
     formData.append('image2', image2)
 
     try {
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       if (!token) {
         setError('Authentication required. Please log in again.')
         setLoading(false)

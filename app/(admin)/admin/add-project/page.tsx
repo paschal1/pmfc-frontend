@@ -38,7 +38,7 @@ const AddProject = () => {
     if (image) formData.append('image', image)
 
     try {
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       if (!token) {
         setError('Authentication token not found.')
         setLoading(false)

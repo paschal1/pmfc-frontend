@@ -38,7 +38,7 @@ const AdminLogin = () => {
       if (response.status === 200) {
         const token = response.data.bearer_token
         Cookies.set('isAdmin', 'true')
-        Cookies.set('adminToken', token, {expires: 1})
+        Cookies.set('userToken', token, {expires: 1})
         router.push('/admin')
         // console.log(response.data)
       } else {

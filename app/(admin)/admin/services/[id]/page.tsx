@@ -25,7 +25,7 @@ const ServiceId = () => {
   useEffect(() => {
     const fetchService = async () => {
       try {
-        const token = Cookies.get('adminToken')
+        const token = Cookies.get('userToken')
         if (!token) return
 
         const res = await axios.get(`https://api.princem-fc.com/api/services/${id}`, {

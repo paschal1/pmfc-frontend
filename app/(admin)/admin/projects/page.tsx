@@ -24,7 +24,7 @@ const Projects = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const token = Cookies.get('adminToken')
+        const token = Cookies.get('userToken')
         if (!token) {
           console.error('No authentication token found')
           setLoading(false)
@@ -50,7 +50,7 @@ const Projects = () => {
     if (!confirm('Are you sure you want to delete this project?')) return
 
     try {
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       if (!token) return
 
       await axios.delete(`https://api.princem-fc.com/api/projects/${id}`, {

@@ -32,7 +32,7 @@ userApiClient.interceptors.request.use(
 userApiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API Error:', error.response?.data)
+    // console.error('API Error:', error.response?.data)
     
     // Handle 401 Unauthorized - user session expired
     if (error.response?.status === 401) {
@@ -74,6 +74,18 @@ export interface RegisterData {
   address?: string
 }
 
+export interface RegisterResponse {
+  bearer_token?: string
+  user?: {
+    id: number
+    name: string
+    email: string
+    phone?: string
+    address?: string
+  }
+  message?: string
+}
+
 // User Login
 export const loginUser = async (credentials: LoginCredentials): Promise<LoginResponse> => {
   try {
@@ -92,12 +104,19 @@ export const loginUser = async (credentials: LoginCredentials): Promise<LoginRes
 }
 
 // User Registration
-export const registerUser = async (userData: RegisterData) => {
+export const registerUser = async (userData: RegisterData): Promise<RegisterResponse> => {
   try {
     const response = await axios.post(`${API_BASE_URL}/register`, userData)
     return response.data
   } catch (error) {
     if (axios.isAxiosError(error)) {
+      // Handle Laravel validation errors
+      if (error.response?.data?.errors) {
+        const errors = error.response.data.errors
+        const firstError = Object.values(errors)[0]
+        const errorMessage = Array.isArray(firstError) ? firstError[0] : 'Registration failed.'
+        throw new Error(errorMessage)
+      }
       throw new Error(
         error.response?.data?.message || 
         error.response?.data?.error || 
@@ -120,7 +139,7 @@ export const logoutUser = async () => {
     
     return true
   } catch (error) {
-    console.error('Logout error:', error)
+    // console.error('Logout error:', error)
     
     // Even if API call fails, clear local data
     Cookies.remove('userToken')

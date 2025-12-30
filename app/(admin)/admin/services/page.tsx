@@ -26,7 +26,7 @@ const Services = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const token = Cookies.get('adminToken')
+        const token = Cookies.get('userToken')
         if (!token) {
           console.error('No token found')
           setLoading(false)
@@ -51,7 +51,7 @@ const Services = () => {
     if (!confirm('Are you sure you want to delete this service?')) return
 
     try {
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       if (!token) return
 
       await axios.delete(`https://api.princem-fc.com/api/services/${id}`, {

@@ -55,7 +55,7 @@ const EditProduct = () => {
       if (!id) return
 
       try {
-        const token = Cookies.get('adminToken')
+        const token = Cookies.get('userToken')
         if (!token) {
           router.push('/admin/login')
           return
@@ -130,7 +130,7 @@ const EditProduct = () => {
     formData.append('_method', 'PUT')
 
     try {
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       if (!token) throw new Error('No authentication')
 
       await axios.post(`https://api.princem-fc.com/api/products/${id}`, formData, {

@@ -32,7 +32,7 @@ const Quotation = () => {
   useEffect(() => {
     const fetchQuotations = async () => {
       try {
-        const token = Cookies.get('adminToken')
+        const token = Cookies.get('userToken')
         if (!token) {
           console.error('No authentication token found')
           setLoading(false)
@@ -63,7 +63,7 @@ const Quotation = () => {
     }
 
     try {
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       if (!token) return
 
       await axios.delete(`https://api.princem-fc.com/api/quotes/${id}`, {

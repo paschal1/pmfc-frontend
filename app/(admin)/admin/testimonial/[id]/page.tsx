@@ -24,7 +24,7 @@ const TestimonialId = () => {
       if (!id) return
 
       try {
-        const token = Cookies.get('adminToken')
+        const token = Cookies.get('userToken')
         if (!token) {
           console.error('No authentication token')
           setLoading(false)

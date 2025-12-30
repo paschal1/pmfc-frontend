@@ -22,7 +22,7 @@ const EditProjectId = () => {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        const token = Cookies.get('adminToken')
+        const token = Cookies.get('userToken')
         if (!token) return
 
         const response = await axios.get(
@@ -70,7 +70,7 @@ const EditProjectId = () => {
     formData.append('_method', 'PUT')
 
     try {
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       if (!token) return
 
       const response = await axios.post(

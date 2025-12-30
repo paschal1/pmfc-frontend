@@ -38,7 +38,7 @@ const OrderTracking = () => {
 
   const fetchOrder = async () => {
     try {
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       if (!token) {
         toast.error('No authentication token found')
         setError('No authentication token found')
@@ -82,7 +82,7 @@ const OrderTracking = () => {
 
     try {
       setUpdating(true)
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       
       if (!token) {
         toast.error('No authentication token found', { id: toastId })

@@ -23,7 +23,7 @@ const Order = () => {
 
   const fetchOrders = async () => {
     try {
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       if (!token) {
         setError('No authentication token found')
         setLoading(false)

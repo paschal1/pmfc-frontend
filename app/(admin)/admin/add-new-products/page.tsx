@@ -38,7 +38,7 @@ const AddNewProducts = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const token = Cookies.get('adminToken')
+        const token = Cookies.get('userToken')
         if (!token) {
           setError('Authentication required')
           setFetchingCategories(false)
@@ -117,7 +117,7 @@ const AddNewProducts = () => {
     if (thumbnailFile) formData.append('thumbnailImage', thumbnailFile)
 
     try {
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       if (!token) {
         setError('Authentication required')
         setLoading(false)

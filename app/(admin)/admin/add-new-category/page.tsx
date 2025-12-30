@@ -65,7 +65,7 @@ const AddNewCategory = () => {
     if (thumbnailFile) formData.append('thumbnailimage', thumbnailFile)
 
     try {
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       if (!token) {
         setError('Authentication required')
         setLoading(false)

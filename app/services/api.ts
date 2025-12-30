@@ -3,11 +3,10 @@ import Cookies from 'js-cookie'
 
 const API_BASE_URL = 'https://api.princem-fc.com/api'
 
-// Create axios instance
+// Create axios instance WITHOUT default Content-Type
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
 })
@@ -15,10 +14,18 @@ const apiClient = axios.create({
 // Add request interceptor
 apiClient.interceptors.request.use(
   (config) => {
-    const token = Cookies.get('adminToken') // Use adminToken from cookies
+    // Check for token in cookies or localStorage
+    const token = Cookies.get('userToken') || localStorage.getItem('userToken')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
+    
+    // Only set Content-Type if not multipart/form-data
+    // (letting FormData set its own boundary)
+    if (!(config.data instanceof FormData) && !config.headers['Content-Type']) {
+      config.headers['Content-Type'] = 'application/json'
+    }
+    
     return config
   },
   (error) => {
@@ -30,11 +37,23 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API Error:', error.response?.data)
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('API Error:', error.response?.data)
+    }
     
     if (error.response?.status === 401) {
-      Cookies.remove('adminToken')
-      window.location.href = '/login'
+      // Clear ALL auth data from both cookies and localStorage
+      Cookies.remove('userToken')
+      Cookies.remove('isLoggedIn')
+      localStorage.removeItem('userToken')
+      localStorage.removeItem('isLoggedIn')
+      localStorage.removeItem('userData')
+      
+      // Only redirect if not already on login page
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   }
@@ -75,8 +94,6 @@ export const deleteOrder = async (id: number) => {
     throw new Error('Failed to delete order')
   }
 }
-
-// Add this function to your existing api.ts file
 
 export const updateOrderStatus = async (orderId: number, status: string) => {
   try {

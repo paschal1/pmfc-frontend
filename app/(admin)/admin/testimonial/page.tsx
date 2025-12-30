@@ -22,7 +22,7 @@ const Testimonial = () => {
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
-        const token = Cookies.get('adminToken')
+        const token = Cookies.get('userToken')
         if (!token) {
           setLoading(false)
           return
@@ -49,7 +49,7 @@ const Testimonial = () => {
     if (!confirm('Are you sure you want to delete this testimonial?')) return
 
     try {
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       if (!token) return
 
       await axios.delete(`https://api.princem-fc.com/api/testimonials/${id}`, {

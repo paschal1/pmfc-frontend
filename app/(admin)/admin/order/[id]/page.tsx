@@ -21,7 +21,7 @@ const OrderId = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const token = Cookies.get('adminToken')
+        const token = Cookies.get('userToken')
         if (!token) {
           setError('No authentication token found')
           setLoading(false)

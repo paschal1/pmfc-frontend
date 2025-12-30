@@ -42,7 +42,7 @@ const Page: React.FC = () => {
                 <div className="flex flex-col text-left ml-0 mt-4 lg:mt-2">
                   <h1 className="text-white font-semibold">{item.name}</h1>
                   <h1 className="text-[#fab702] mt-2 font-semibold">
-                    ${item.price}
+                    ₦{item.price}
                   </h1>
                 </div>
               </div>

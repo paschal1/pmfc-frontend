@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { isUserLoggedIn } from '../services/userAuth.service'
+import { useAuth } from '../(main)/store/useAuth'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -11,38 +11,32 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const router = useRouter()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const { isLoggedIn, loading } = useAuth()
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
-    const checkAuth = () => {
-      const loggedIn = isUserLoggedIn()
-      
-      if (!loggedIn) {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    // Only check auth after component is mounted (prevents hydration issues)
+    if (isMounted && !loading) {
+      if (!isLoggedIn) {
         router.push('/login')
-      } else {
-        setIsAuthenticated(true)
       }
-      
-      setIsLoading(false)
     }
+  }, [isLoggedIn, loading, isMounted, router])
 
-    checkAuth()
-  }, [router])
-
-  if (isLoading) {
+  // Show loading while checking authentication
+  if (!isMounted || loading || !isLoggedIn) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-center">
           <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-[#fab702] border-r-transparent"></div>
           <p className="mt-4 text-white">Loading...</p>
         </div>
       </div>
     )
-  }
-
-  if (!isAuthenticated) {
-    return null
   }
 
   return <>{children}</>

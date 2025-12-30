@@ -1,4 +1,3 @@
-// app/layout.tsx
 import './globals.css'
 import { ReactNode } from 'react'
 import ClientProvider from './component/ClientProvider'
@@ -37,6 +36,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               duration: 4000,
               iconTheme: {
                 primary: '#ef4444',
+                secondary: '#fff',
+              },
+            },
+            // ✅ NEW: Add warning toast configuration
+            loading: {
+              duration: 4000,
+              iconTheme: {
+                primary: '#3b82f6',
                 secondary: '#fff',
               },
             },

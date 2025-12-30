@@ -29,7 +29,7 @@ const EditServiceId = () => {
   useEffect(() => {
     const fetchService = async () => {
       try {
-        const token = Cookies.get('adminToken')
+        const token = Cookies.get('userToken')
         if (!token) {
           router.push('/admin/login')
           return
@@ -86,7 +86,7 @@ const EditServiceId = () => {
     formData.append('_method', 'PUT')
 
     try {
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       await axios.post(`https://api.princem-fc.com/api/services/${id}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,

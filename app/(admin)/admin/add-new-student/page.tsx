@@ -39,7 +39,7 @@ const AddNewStudent = () => {
     }
 
     try {
-      const token = Cookies.get('adminToken')
+      const token = Cookies.get('userToken')
       if (!token) {
         setError('Authentication required. Please log in again.')
         setLoading(false)
