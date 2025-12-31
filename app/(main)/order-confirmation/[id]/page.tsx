@@ -262,7 +262,7 @@ export default function OrderConfirmationPage() {
             </li>
             <li className="flex items-start gap-3">
               <span className="text-[#fab702] font-bold mt-1">3.</span>
-              <span>We'll notify you once your order is shipped</span>
+              <span>We will notify you once your order is shipped</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="text-[#fab702] font-bold mt-1">4.</span>
