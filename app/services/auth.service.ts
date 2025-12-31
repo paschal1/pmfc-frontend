@@ -1,19 +1,14 @@
-// services/auth.service.ts
-
 import axios from 'axios'
 import Cookies from 'js-cookie'
+import { triggerAuthStateChange } from '../(main)/store/useAuth'
 
 const API_BASE_URL = 'https://api.princem-fc.com/api'
 const TOKEN_KEY = 'userToken'
 const LOGIN_KEY = 'isLoggedIn'
 const USER_DATA_KEY = 'userData'
+const USER_CART_KEY = 'userCart'
 
-/**
- * Unified authentication service - handles all auth operations
- * Uses consistent token naming across the app
- */
-
-// Create axios instance for authenticated requests
+// Axios instance for authenticated requests
 export const authApiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -23,9 +18,7 @@ export const authApiClient = axios.create({
   withCredentials: true,
 })
 
-/**
- * Request interceptor - add token to all requests
- */
+// Add token to all requests
 authApiClient.interceptors.request.use(
   (config) => {
     const token = getAuthToken()
@@ -34,52 +27,33 @@ authApiClient.interceptors.request.use(
     }
     return config
   },
-  (error) => {
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(error)
 )
 
-/**
- * Response interceptor - handle 401 errors
- */
+// Handle 401 errors globally
 authApiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Clear auth data
       clearAuth()
-      
-      // Redirect to login if not already there
       if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
         window.location.href = '/login'
       }
     }
-    
     return Promise.reject(error)
   }
 )
 
-/**
- * Get stored auth token
- */
+// Get auth token
 export const getAuthToken = (): string | null => {
   if (typeof window !== 'undefined') {
-    // Try cookies first
-    const cookieToken = Cookies.get(TOKEN_KEY)
-    if (cookieToken) {
-      return cookieToken
-    }
-    
-    // Fallback to localStorage
-    return localStorage.getItem(TOKEN_KEY)
+    return Cookies.get(TOKEN_KEY) || localStorage.getItem(TOKEN_KEY)
   }
   return null
 }
 
-/**
- * Get stored user data
- */
-export const getStoredUserData = () => {
+// Get stored user data
+export const getStoredUserData = (): any | null => {
   if (typeof window !== 'undefined') {
     const userData = localStorage.getItem(USER_DATA_KEY)
     return userData ? JSON.parse(userData) : null
@@ -87,89 +61,63 @@ export const getStoredUserData = () => {
   return null
 }
 
-/**
- * Store authentication data
- */
-export const storeAuthData = (token: string, user: any) => {
-  // Store token in cookies (more secure)
-  Cookies.set(TOKEN_KEY, token, {
-    expires: 7,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'Lax',
-  })
-  
-  // Store login flag
-  Cookies.set(LOGIN_KEY, 'true', {
-    expires: 7,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'Lax',
-  })
+// Get stored user cart
+export const getStoredUserCart = (): any | null => {
+  if (typeof window !== 'undefined') {
+    const cartData = localStorage.getItem(USER_CART_KEY)
+    return cartData ? JSON.parse(cartData) : null
+  }
+  return null
+}
 
-  // Also store in localStorage for client-side access
+// Store token, user, and optional cart
+export const storeAuthData = (token: string, user: any, cart?: any) => {
+  Cookies.set(TOKEN_KEY, token, { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'Lax' })
+  Cookies.set(LOGIN_KEY, 'true', { expires: 7, secure: process.env.NODE_ENV === 'production', sameSite: 'Lax' })
+
   if (typeof window !== 'undefined') {
     localStorage.setItem(TOKEN_KEY, token)
     localStorage.setItem(LOGIN_KEY, 'true')
-    
-    if (user) {
-      localStorage.setItem(USER_DATA_KEY, JSON.stringify(user))
-    }
+    if (user) localStorage.setItem(USER_DATA_KEY, JSON.stringify(user))
+    if (cart) localStorage.setItem(USER_CART_KEY, JSON.stringify(cart))
   }
 }
 
-/**
- * Clear all authentication data
- */
+// Clear all auth data
 export const clearAuth = () => {
-  // Remove from cookies
   Cookies.remove(TOKEN_KEY)
   Cookies.remove(LOGIN_KEY)
-  
-  // Remove from localStorage
   if (typeof window !== 'undefined') {
     localStorage.removeItem(TOKEN_KEY)
     localStorage.removeItem(LOGIN_KEY)
     localStorage.removeItem(USER_DATA_KEY)
+    localStorage.removeItem(USER_CART_KEY)
   }
 }
 
-/**
- * Check if user is authenticated
- */
-export const isAuthenticated = (): boolean => {
-  const token = getAuthToken()
-  return !!token && token.length > 0
-}
+// Check authentication
+export const isAuthenticated = (): boolean => !!getAuthToken()
 
-/**
- * User Login
- */
+// User login
 export const loginUser = async (email: string, password: string) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/login`, {
-      email,
-      password,
-    })
+    const response = await axios.post(`${API_BASE_URL}/login`, { email, password })
+    const { bearer_token, user, cart } = response.data
 
-    if (response.data.bearer_token) {
-      storeAuthData(response.data.bearer_token, response.data.user)
+    if (bearer_token) {
+      storeAuthData(bearer_token, user, cart)
     }
 
     return response.data
-  } catch (error) {
+  } catch (error: any) {
     if (axios.isAxiosError(error)) {
-      throw new Error(
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        'Login failed. Please check your credentials.'
-      )
+      throw new Error(error.response?.data?.message || error.response?.data?.error || 'Login failed. Please check your credentials.')
     }
     throw new Error('Login failed. Please try again.')
   }
 }
 
-/**
- * User Registration
- */
+// User registration
 export const registerUser = async (userData: {
   name: string
   email: string
@@ -180,77 +128,57 @@ export const registerUser = async (userData: {
 }) => {
   try {
     const response = await axios.post(`${API_BASE_URL}/register`, userData)
+    const { bearer_token, user, cart } = response.data
 
-    if (response.data.bearer_token) {
-      storeAuthData(response.data.bearer_token, response.data.user)
-    }
-
+    if (bearer_token) storeAuthData(bearer_token, user, cart)
     return response.data
-  } catch (error) {
+  } catch (error: any) {
     if (axios.isAxiosError(error)) {
-      // Handle Laravel validation errors
       if (error.response?.data?.errors) {
         const errors = error.response.data.errors
         const firstError = Object.values(errors)[0]
-        const errorMessage = Array.isArray(firstError)
-          ? (firstError[0] as string)
-          : 'Registration failed.'
-        throw new Error(errorMessage)
+        throw new Error(Array.isArray(firstError) ? firstError[0] : 'Registration failed.')
       }
-      throw new Error(
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        'Registration failed.'
-      )
+      throw new Error(error.response?.data?.message || error.response?.data?.error || 'Registration failed.')
     }
     throw new Error('Registration failed. Please try again.')
   }
 }
 
-/**
- * User Logout
- */
+// User logout
 export const logoutUser = async () => {
   try {
-    // Try to notify backend
-    await authApiClient.post('/logout')
+    await authApiClient.post('/logout') // invalidates backend session
   } catch (error) {
-    // Even if it fails, clear local data
-    console.error('Logout error:', error)
+    console.error('Logout API error:', error)
   } finally {
     clearAuth()
+    triggerAuthStateChange() // update global state
   }
 }
 
-/**
- * Get Current User
- */
+
+// Get current user
 export const getCurrentUser = async () => {
   try {
     const response = await authApiClient.get('/user')
     return response.data.data || response.data
-  } catch (error) {
+  } catch (error: any) {
     if (axios.isAxiosError(error)) {
-      throw new Error(
-        error.response?.data?.message || 'Failed to fetch user data.'
-      )
+      throw new Error(error.response?.data?.message || 'Failed to fetch user data.')
     }
     throw new Error('Failed to fetch user data.')
   }
 }
 
-/**
- * Update User Profile
- */
+// Update user profile
 export const updateUserProfile = async (userData: any) => {
   try {
     const response = await authApiClient.put('/user/profile', userData)
     return response.data
-  } catch (error) {
+  } catch (error: any) {
     if (axios.isAxiosError(error)) {
-      throw new Error(
-        error.response?.data?.message || 'Failed to update profile.'
-      )
+      throw new Error(error.response?.data?.message || 'Failed to update profile.')
     }
     throw new Error('Failed to update profile.')
   }

@@ -1,19 +1,58 @@
 'use client'
-import { motion, AnimatePresence } from 'framer-motion'
-import { imageData, ImageDataStructure } from '../data/imageData'
-import React, { useState } from 'react'
+
+import { motion } from 'framer-motion'
+import React, { useState, useEffect } from 'react'
 import ProjectSection from './ProjectSection'
+import * as projectsApi from '../../services/projectsApi.service'
+import { Loader } from 'lucide-react'
+
+export interface ImageDataStructure {
+  id: number
+  section: string
+  image: string | null
+  title: string
+  description?: string
+  status?: string
+  slug?: string
+}
 
 const ProjectControlSection = () => {
-  const [currentSet, setCurrentSet] = useState<ImageDataStructure[]>(imageData)
-  const [activeSection, setActiveSection] = useState<string>('all')
+  const [currentSet, setCurrentSet] = useState<ImageDataStructure[]>([])
+  const [allProjects, setAllProjects] = useState<ImageDataStructure[]>([])
+  const [activeSection, setActiveSection] = useState<projectsApi.ProjectType>('all')
+  const [loading, setLoading] = useState(true)
 
-  const handleButtonClick = (section: string) => {
+  // Fetch projects from API on mount
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true)
+        const response = await projectsApi.getProjects({
+          type: 'all',
+          per_page: 50, // Fetch more for homepage display
+        })
+
+        const projects = response.data.map(projectsApi.convertToProjectData)
+        setAllProjects(projects)
+        setCurrentSet(projects)
+      } catch (error) {
+        console.error('Failed to fetch projects:', error)
+        setAllProjects([])
+        setCurrentSet([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProjects()
+  }, [])
+
+  const handleButtonClick = (section: projectsApi.ProjectType) => {
     setActiveSection(section)
     if (section === 'all') {
-      setCurrentSet(imageData)
+      setCurrentSet(allProjects)
     } else {
-      setCurrentSet(imageData.filter((item) => item.section === section))
+      setCurrentSet(allProjects.filter((item) => item.section === section))
     }
   }
 
@@ -22,18 +61,17 @@ const ProjectControlSection = () => {
     tap: { scale: 0.9 },
   }
 
-  const buttonClass = (section: string) => {
+  const buttonClass = (section: projectsApi.ProjectType) => {
     return ` ${
       activeSection === section
-        ? 'bg-[#fab702] p-[0.5rem] sm:p-[0.2rem] text-[#000000] uppercase'
-        : 'hover:bg-black p-[0.5rem] sm:p-[0.2rem] text-[#888888] uppercase'
+        ? 'bg-[#fab702] p-[0.5rem] sm:p-[0.2rem] text-[#000000] uppercase transition-all duration-200'
+        : 'hover:bg-black p-[0.5rem] sm:p-[0.2rem] text-[#888888] uppercase transition-all duration-200'
     }`
   }
 
-  const projectSectionProps = { currentSet };
-
   return (
     <>
+      {/* Filter Buttons */}
       <div className="flex flex-col mt-10 items-center h-[50px] md:h-[30px] justify-center gap-6 text-[13px]">
         <div className="flex flex-row gap-6">
           <motion.button
@@ -41,6 +79,7 @@ const ProjectControlSection = () => {
             onClick={() => handleButtonClick('all')}
             whileTap="tap"
             variants={buttonVariants}
+            disabled={loading}
           >
             All Projects
           </motion.button>
@@ -49,6 +88,7 @@ const ProjectControlSection = () => {
             onClick={() => handleButtonClick('residential')}
             whileTap="tap"
             variants={buttonVariants}
+            disabled={loading}
           >
             Residential
           </motion.button>
@@ -57,6 +97,7 @@ const ProjectControlSection = () => {
             onClick={() => handleButtonClick('hospitality')}
             whileTap="tap"
             variants={buttonVariants}
+            disabled={loading}
           >
             Hospitality
           </motion.button>
@@ -65,6 +106,7 @@ const ProjectControlSection = () => {
             onClick={() => handleButtonClick('office')}
             whileTap="tap"
             variants={buttonVariants}
+            disabled={loading}
           >
             Office
           </motion.button>
@@ -73,6 +115,7 @@ const ProjectControlSection = () => {
             onClick={() => handleButtonClick('commercial')}
             whileTap="tap"
             variants={buttonVariants}
+            disabled={loading}
           >
             Commercial
           </motion.button>
@@ -83,6 +126,7 @@ const ProjectControlSection = () => {
             onClick={() => handleButtonClick('office')}
             whileTap="tap"
             variants={buttonVariants}
+            disabled={loading}
           >
             Office
           </motion.button>
@@ -91,12 +135,30 @@ const ProjectControlSection = () => {
             onClick={() => handleButtonClick('commercial')}
             whileTap="tap"
             variants={buttonVariants}
+            disabled={loading}
           >
             Commercial
           </motion.button>
         </div>
       </div>
-      <ProjectSection currentSet={currentSet} />
+
+      {/* Loading State */}
+      {loading ? (
+        <div className="flex justify-center items-center min-h-[400px]">
+          <Loader className="w-12 h-12 text-[#fab702] animate-spin" />
+        </div>
+      ) : (
+        <>
+          {/* Projects Display */}
+          {currentSet.length === 0 ? (
+            <div className="flex justify-center items-center min-h-[400px] text-gray-400">
+              <p className="text-lg">No projects found in this category.</p>
+            </div>
+          ) : (
+            <ProjectSection currentSet={currentSet} />
+          )}
+        </>
+      )}
     </>
   )
 }

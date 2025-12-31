@@ -29,20 +29,27 @@ apiClient.interceptors.request.use(
     return config
   },
   (error) => {
+    console.error('Request Error:', error)
     return Promise.reject(error)
   }
 )
 
-// Add response interceptor
+// Add response interceptor with FULL error logging
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Only log in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('API Error:', error.response?.data)
-    }
+    // ALWAYS log errors - not just in development
+    console.error('=== API ERROR START ===')
+    console.error('Error Object:', error)
+    console.error('Response Status:', error.response?.status)
+    console.error('Response Data:', error.response?.data)
+    console.error('Request URL:', error.config?.url)
+    console.error('Request Method:', error.config?.method)
+    console.error('Request Data:', error.config?.data)
+    console.error('=== API ERROR END ===')
     
     if (error.response?.status === 401) {
+      console.warn('Unauthorized - clearing auth data')
       // Clear ALL auth data from both cookies and localStorage
       Cookies.remove('userToken')
       Cookies.remove('isLoggedIn')
@@ -52,9 +59,11 @@ apiClient.interceptors.response.use(
       
       // Only redirect if not already on login page
       if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        console.log('Redirecting to login...')
         window.location.href = '/login'
       }
     }
+    
     return Promise.reject(error)
   }
 )

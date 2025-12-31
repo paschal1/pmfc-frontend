@@ -11,6 +11,7 @@ type ProjectData = {
   title: string
   description: string
   status: string
+  type: string // added type
   image: string
 }
 
@@ -94,6 +95,16 @@ const ProjectId = () => {
                 </dt>
                 <dd className="mt-2 text-gray-800 whitespace-pre-wrap">
                   {project.description}
+                </dd>
+              </div>
+
+              {/* Type */}
+              <div>
+                <dt className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                  Type
+                </dt>
+                <dd className="mt-2 text-gray-800 capitalize">
+                  {project.type}
                 </dd>
               </div>
 

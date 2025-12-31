@@ -1,8 +1,7 @@
 'use client'
-import { data, } from '../data/data'
+import { data } from '../data/data'
 import Image from 'next/image'
 import { Parallax } from 'react-parallax'
-
 
 const FirstBody: React.FC = () => {
   return (
@@ -48,7 +47,7 @@ const FirstBody: React.FC = () => {
         bgImageStyle={{
           backgroundSize: 'cover',
           backgroundPosition: 'left',
-          objectFit: 'cover', // Ensures the image maintains its aspect ratio
+          objectFit: 'cover',
         }}
       >
         <div className="flex flex-col items-center">
@@ -68,35 +67,26 @@ const FirstBody: React.FC = () => {
                 Meet & Agree
               </h1>
             </div>
-            <div className="h-[180px] w-[180px] bg-[#fab702] rounded-full cursor-pointer flex items-center  hover:bg-black transition-all duration-300 ease group">
+            <div className="h-[180px] w-[180px] bg-[#fab702] rounded-full cursor-pointer flex items-center hover:bg-black transition-all duration-300 ease group">
               <h1 className="text-black mx-auto uppercase font-bold text-[14px] group-hover:text-[#fab702]">
                 Idea & Concept
               </h1>
             </div>
-            <div className="h-[180px] w-[180px] bg-[#fab702] rounded-full cursor-pointer flex items-center  hover:bg-black transition-all duration-300 ease group">
+            <div className="h-[180px] w-[180px] bg-[#fab702] rounded-full cursor-pointer flex items-center hover:bg-black transition-all duration-300 ease group">
               <h1 className="text-black mx-auto uppercase font-bold text-[14px] group-hover:text-[#fab702]">
                 Design & Create
               </h1>
             </div>
-            <div className="h-[180px] w-[180px] bg-[#fab702] rounded-full cursor-pointer flex items-center  hover:bg-black transition-all duration-300 ease group">
+            <div className="h-[180px] w-[180px] bg-[#fab702] rounded-full cursor-pointer flex items-center hover:bg-black transition-all duration-300 ease group">
               <h1 className="text-black mx-auto uppercase font-bold text-[14px] group-hover:text-[#fab702]">
-                Build & install
+                Build & Install
               </h1>
             </div>
           </div>
           <div className="w-[300px] lg:w-[1050px] sm:w-[600px] border-b-[rgb(248, 249, 250)] border-b mt-28 sm:mt-24 lg:mt-28"></div>
-          <div className="w-[300px] lg:w-[1050px] sm:w-[600px] mt-10 text-[13px] lg:text-[13px] sm:text-[14ypx] font-thin">
-            <h1 className="text-white ">
-              Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-              accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
-              quae ab illo inventore veritatis et quasi architecto beatae vitae
-              dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
-              aspernatur aut odit aut fugit, sed quia consequuntur magni dolores
-              eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam
-              est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci
-              velit, sed quia non numquam eius modi tempora incidunt ut labore
-              et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima
-              veniam.
+          <div className="w-[300px] lg:w-[1050px] sm:w-[600px] mt-10 text-[13px] lg:text-[13px] sm:text-[14px] font-thin">
+            <h1 className="text-white leading-relaxed">
+              At Prince M Furniture Company, we believe that exceptional furniture begins with understanding your vision. Our comprehensive process ensures that every piece we create is a perfect blend of artistry, functionality, and craftsmanship. From the initial consultation where we learn about your space and style preferences, to the final installation where your dream furniture comes to life, we're with you every step of the way. Our experienced team of designers and craftsmen work collaboratively to transform ideas into stunning reality, using only premium materials and time-tested techniques. We take pride in our attention to detail, commitment to quality, and dedication to exceeding your expectations. Whether you're furnishing a home, office, or commercial space, our streamlined process guarantees a seamless experience from concept to completion. Trust us to create furniture that not only meets your needs but becomes a cherished part of your space for years to come.
             </h1>
           </div>
         </div>

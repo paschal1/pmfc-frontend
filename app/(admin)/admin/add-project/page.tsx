@@ -8,6 +8,7 @@ const AddProject = () => {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [status, setStatus] = useState('')
+  const [type, setType] = useState('') // new state for project type
   const [imageFile, setImageFile] = useState('No File Chosen')
   const [image, setImage] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
@@ -35,6 +36,7 @@ const AddProject = () => {
     formData.append('title', title)
     formData.append('description', description)
     formData.append('status', status)
+    formData.append('type', type) // append type
     if (image) formData.append('image', image)
 
     try {
@@ -61,6 +63,7 @@ const AddProject = () => {
         setTitle('')
         setDescription('')
         setStatus('')
+        setType('') // reset type
         setImageFile('No File Chosen')
         setImage(null)
       }
@@ -119,6 +122,27 @@ const AddProject = () => {
                 className="col-span-2 w-full px-4 py-3 border border-[#EFEFEF] bg-[#F9F9F9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702] transition resize-none"
                 required
               />
+            </div>
+
+            {/* Project Type */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+              <label className="font-semibold text-[#4A5568] text-right">
+                Project Type
+              </label>
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                className="col-span-2 w-full px-4 py-3 border border-[#EFEFEF] bg-[#F9F9F9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702] transition"
+                required
+              >
+                <option value="" disabled>
+                  Select project type
+                </option>
+                <option value="residential">Residential</option>
+                <option value="hospitality">Hospitality</option>
+                <option value="office">Office</option>
+                <option value="commercial">Commercial</option>
+              </select>
             </div>
 
             {/* Status */}

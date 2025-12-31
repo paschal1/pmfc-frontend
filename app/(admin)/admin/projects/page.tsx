@@ -1,8 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { MdOutlineRemoveRedEye } from 'react-icons/md'
-import { MdOutlineEdit } from 'react-icons/md'
+import { MdOutlineRemoveRedEye, MdOutlineEdit } from 'react-icons/md'
 import { RiDeleteBin5Line } from 'react-icons/ri'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
@@ -35,7 +34,12 @@ const Projects = () => {
           headers: { Authorization: `Bearer ${token}` },
         })
 
-        setProjects(response.data)
+        // Ensure projects is an array
+        const projectsArray = Array.isArray(response.data) 
+          ? response.data 
+          : response.data.data || [] // adjust if API returns { data: [...] }
+
+        setProjects(projectsArray)
       } catch (error) {
         console.error('Error fetching projects:', error)
       } finally {
@@ -64,12 +68,14 @@ const Projects = () => {
     }
   }
 
-  // Filter projects based on search
-  const filteredProjects = projects.filter(
-    (project) =>
-      project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.description.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  // Only filter if projects is an array
+  const filteredProjects = Array.isArray(projects)
+    ? projects.filter(
+        (project) =>
+          project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          project.description.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : []
 
   return (
     <div className="min-h-screen bg-[#F2F2F2] py-8 px-4">
@@ -79,7 +85,6 @@ const Projects = () => {
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-4 sm:mb-0">
             Projects
           </h1>
-
           <div className="flex items-center gap-3">
             <label htmlFor="search" className="text-gray-700 font-medium">
               Search:

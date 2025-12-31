@@ -3,6 +3,7 @@ import menuBarReducer from './menubarSlice'
 import pageDropdownReducer from './pageDropdownSlice'
 import accountDropdownReducer from './accountDropdownSlice'
 import serviceDropdownReducer from './serviceDropdownSlice'
+import cartReducer from './cartSlice'
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     pageDropdown: pageDropdownReducer,
     accountDropdown: accountDropdownReducer,
     serviceDropdown: serviceDropdownReducer,
+    cart: cartReducer,
   },
 })
 

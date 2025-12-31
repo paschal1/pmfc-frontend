@@ -1,4 +1,3 @@
-// app/login/page.tsx
 'use client'
 
 import Link from 'next/link'
@@ -7,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { Parallax } from 'react-parallax'
 import SecondaryFooter from '../components/SecondaryFooter'
-import { loginUser } from '../../services/auth.service'
+import { loginUser, storeAuthData } from '../../services/auth.service'
 import { triggerAuthStateChange } from '../store/useAuth'
 import { useAuth } from '../store/useAuth'
 
@@ -20,7 +19,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false)
   const [isInitializing, setIsInitializing] = useState(true)
 
-  // Check if already logged in
+  // Redirect if already logged in
   useEffect(() => {
     if (!authLoading) {
       setIsInitializing(false)
@@ -43,9 +42,13 @@ const Login = () => {
 
     try {
       const response = await loginUser(email, password)
+      const { bearer_token, user, cart } = response
+
+      // Store token, user, and cart in localStorage & cookies
+      storeAuthData(bearer_token, user, cart)
 
       toast.dismiss(loadingToast)
-      toast.success(`Welcome back, ${response.user?.name || 'User'}!`)
+      toast.success(`Welcome back, ${user?.name || 'User'}!`)
 
       // Trigger auth state change
       triggerAuthStateChange()
