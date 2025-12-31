@@ -11,6 +11,7 @@ type ServiceType = {
   id: number
   title: string
   description: string
+  type: string
   image1: string
   image2: string
   price: string
@@ -22,6 +23,14 @@ const Services = () => {
   const [services, setServices] = useState<ServiceType[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [filterType, setFilterType] = useState('')
+
+  const serviceTypes = [
+    'Residential Design',
+    'Hospitality Design',
+    'Office Design',
+    'Commercial Design'
+  ]
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -36,7 +45,7 @@ const Services = () => {
         const response = await axios.get('https://api.princem-fc.com/api/services', {
           headers: { Authorization: `Bearer ${token}` },
         })
-        setServices(response.data.data || response.data) // adjust based on API structure
+        setServices(response.data.data || response.data)
       } catch (error) {
         console.error('Error fetching services:', error)
       } finally {
@@ -66,10 +75,31 @@ const Services = () => {
   }
 
   const filteredServices = services.filter(
-    (service) =>
-      service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      service.description.toLowerCase().includes(searchTerm.toLowerCase())
+    (service) => {
+      const matchesSearch =
+        service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        service.description.toLowerCase().includes(searchTerm.toLowerCase())
+      
+      const matchesType = filterType ? service.type === filterType : true
+      
+      return matchesSearch && matchesType
+    }
   )
+
+  const getTypeBadgeColor = (type: string) => {
+    switch(type) {
+      case 'Residential Design':
+        return 'bg-blue-100 text-blue-800'
+      case 'Hospitality Design':
+        return 'bg-purple-100 text-purple-800'
+      case 'Office Design':
+        return 'bg-green-100 text-green-800'
+      case 'Commercial Design':
+        return 'bg-orange-100 text-orange-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#F2F2F2] py-8 px-4">
@@ -95,6 +125,33 @@ const Services = () => {
           </div>
         </div>
 
+        {/* Filter by Type */}
+        <div className="mb-6 flex flex-wrap gap-2">
+          <button
+            onClick={() => setFilterType('')}
+            className={`px-4 py-2 rounded-lg font-medium transition ${
+              filterType === ''
+                ? 'bg-[#fab702] text-black'
+                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            All Types
+          </button>
+          {serviceTypes.map((type) => (
+            <button
+              key={type}
+              onClick={() => setFilterType(type)}
+              className={`px-4 py-2 rounded-lg font-medium transition ${
+                filterType === type
+                  ? 'bg-[#fab702] text-black'
+                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              {type}
+            </button>
+          ))}
+        </div>
+
         {/* Table */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
           <div className="overflow-x-auto">
@@ -102,26 +159,25 @@ const Services = () => {
               <thead className="bg-gray-100 text-gray-700">
                 <tr>
                   <th className="px-4 py-3 text-left font-semibold">Title</th>
+                  <th className="px-4 py-3 text-left font-semibold">Type</th>
                   <th className="px-4 py-3 text-left font-semibold">Description</th>
                   <th className="px-4 py-3 text-center font-semibold">Image 1</th>
                   <th className="px-4 py-3 text-center font-semibold">Image 2</th>
-                  <th className="px-4 py-3 text-center font-semibold">Price</th>
-                  <th className="px-4 py-3 text-center font-semibold">Min Price</th>
-                  <th className="px-4 py-3 text-center font-semibold">Max Price</th>
+                  <th className="px-4 py-3 text-center font-semibold">Price Range</th>
                   <th className="px-4 py-3 text-center font-semibold">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {loading ? (
                   <tr>
-                    <td colSpan={8} className="text-center py-12 text-gray-500">
+                    <td colSpan={7} className="text-center py-12 text-gray-500">
                       Loading services...
                     </td>
                   </tr>
                 ) : filteredServices.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="text-center py-12 text-gray-500">
-                      {searchTerm ? 'No matching services found' : 'No services available'}
+                    <td colSpan={7} className="text-center py-12 text-gray-500">
+                      {searchTerm || filterType ? 'No matching services found' : 'No services available'}
                     </td>
                   </tr>
                 ) : (
@@ -129,6 +185,11 @@ const Services = () => {
                     <tr key={item.id} className="hover:bg-gray-50">
                       <td className="px-4 py-4 max-w-xs">
                         <p className="font-medium truncate">{item.title}</p>
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getTypeBadgeColor(item.type)}`}>
+                          {item.type}
+                        </span>
                       </td>
                       <td className="px-4 py-4 max-w-md">
                         <p className="text-gray-600 truncate">{item.description}</p>
@@ -153,9 +214,11 @@ const Services = () => {
                           />
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-center">₦{item.price}</td>
-                      <td className="px-4 py-4 text-center">₦{item.min_price}</td>
-                      <td className="px-4 py-4 text-center">₦{item.max_price}</td>
+                      <td className="px-4 py-4 text-center">
+                        <div className="text-sm">
+                          <div className="font-medium">₦{item.min_price} - ₦{item.max_price}</div>
+                        </div>
+                      </td>
                       <td className="px-4 py-4">
                         <div className="flex justify-center gap-4">
                           <Link href={`/admin/services/${item.id}`} className="text-purple-600 hover:text-purple-800">

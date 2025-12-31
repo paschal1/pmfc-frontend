@@ -8,6 +8,7 @@ import Image from 'next/image'
 const AddService = () => {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [type, setType] = useState('Residential Design')
   const [price, setPrice] = useState('')
   const [min_price, setMin_price] = useState('')
   const [max_price, setMax_price] = useState('')
@@ -18,6 +19,13 @@ const AddService = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+
+  const serviceTypes = [
+    'Residential Design',
+    'Hospitality Design',
+    'Office Design',
+    'Commercial Design'
+  ]
 
   const handleImageChange = (
     file: File | null,
@@ -48,6 +56,7 @@ const AddService = () => {
     const formData = new FormData()
     formData.append('title', title)
     formData.append('description', description)
+    formData.append('type', type)
     formData.append('price', price)
     formData.append('min_price', min_price)
     formData.append('max_price', max_price)
@@ -74,6 +83,7 @@ const AddService = () => {
       // Reset form
       setTitle('')
       setDescription('')
+      setType('Residential Design')
       setPrice('')
       setMin_price('')
       setMax_price('')
@@ -101,7 +111,7 @@ const AddService = () => {
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Title & Price Row */}
+            {/* Title & Type Row */}
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-gray-700 font-semibold mb-2">Title</label>
@@ -116,6 +126,25 @@ const AddService = () => {
               </div>
 
               <div>
+                <label className="block text-gray-700 font-semibold mb-2">Service Type</label>
+                <select
+                  value={type}
+                  onChange={(e) => setType(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702]"
+                  required
+                >
+                  {serviceTypes.map((serviceType) => (
+                    <option key={serviceType} value={serviceType}>
+                      {serviceType}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Price & Min Price Row */}
+            <div className="grid md:grid-cols-3 gap-6">
+              <div>
                 <label className="block text-gray-700 font-semibold mb-2">Price (₦)</label>
                 <input
                   type="number"
@@ -126,10 +155,7 @@ const AddService = () => {
                   required
                 />
               </div>
-            </div>
 
-            {/* Min & Max Price */}
-            <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-gray-700 font-semibold mb-2">Minimum Price (₦)</label>
                 <input

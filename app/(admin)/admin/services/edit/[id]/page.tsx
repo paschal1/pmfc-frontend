@@ -12,6 +12,7 @@ const EditServiceId = () => {
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [type, setType] = useState('Residential Design')
   const [price, setPrice] = useState('')
   const [min_price, setMin_price] = useState('')
   const [max_price, setMax_price] = useState('')
@@ -25,6 +26,13 @@ const EditServiceId = () => {
   const [fetchLoading, setFetchLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+
+  const serviceTypes = [
+    'Residential Design',
+    'Hospitality Design',
+    'Office Design',
+    'Commercial Design'
+  ]
 
   useEffect(() => {
     const fetchService = async () => {
@@ -42,6 +50,7 @@ const EditServiceId = () => {
         const data = response.data.data
         setTitle(data.title)
         setDescription(data.description)
+        setType(data.type || 'Residential Design')
         setPrice(data.price)
         setMin_price(data.min_price)
         setMax_price(data.max_price)
@@ -65,7 +74,7 @@ const EditServiceId = () => {
     if (file) {
       previewSetter(URL.createObjectURL(file))
     } else {
-      previewSetter(existing) // fallback to existing
+      previewSetter(existing)
     }
   }
 
@@ -78,6 +87,7 @@ const EditServiceId = () => {
     const formData = new FormData()
     formData.append('title', title)
     formData.append('description', description)
+    formData.append('type', type)
     formData.append('price', price)
     formData.append('min_price', min_price)
     formData.append('max_price', max_price)
@@ -124,6 +134,7 @@ const EditServiceId = () => {
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-8">Edit Service #{id}</h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Title & Type Row */}
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-gray-700 font-semibold mb-2">Title</label>
@@ -137,6 +148,25 @@ const EditServiceId = () => {
               </div>
 
               <div>
+                <label className="block text-gray-700 font-semibold mb-2">Service Type</label>
+                <select
+                  value={type}
+                  onChange={(e) => setType(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fab702]"
+                  required
+                >
+                  {serviceTypes.map((serviceType) => (
+                    <option key={serviceType} value={serviceType}>
+                      {serviceType}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Price Fields */}
+            <div className="grid md:grid-cols-3 gap-6">
+              <div>
                 <label className="block text-gray-700 font-semibold mb-2">Price (₦)</label>
                 <input
                   type="number"
@@ -146,9 +176,7 @@ const EditServiceId = () => {
                   required
                 />
               </div>
-            </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-gray-700 font-semibold mb-2">Min Price (₦)</label>
                 <input
@@ -172,6 +200,7 @@ const EditServiceId = () => {
               </div>
             </div>
 
+            {/* Description */}
             <div>
               <label className="block text-gray-700 font-semibold mb-2">Description</label>
               <textarea
@@ -183,6 +212,7 @@ const EditServiceId = () => {
               />
             </div>
 
+            {/* Image Uploads */}
             <div className="grid md:grid-cols-2 gap-8">
               <div>
                 <label className="block text-gray-700 font-semibold mb-3">Image 1</label>
@@ -235,6 +265,7 @@ const EditServiceId = () => {
               </div>
             </div>
 
+            {/* Submit Button */}
             <div className="flex justify-center pt-6">
               <button
                 type="submit"

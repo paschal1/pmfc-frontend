@@ -3,10 +3,14 @@
 import { useEffect, useState } from 'react'
 import { GoDatabase } from 'react-icons/go'
 import { RiShoppingBag3Line, RiChat3Line, RiUserAddLine } from 'react-icons/ri'
+import { MdOutlineMailOutline, MdRequestPage, MdLocationOn } from 'react-icons/md'
+import Link from 'next/link'
 import DashboardCategory from './components/DashboardCategory'
 import DashboardBestSellers from './components/DashboardBestSellers'
 import DashboardRecentOrder from './components/DashboardRecentOrder'
 import DashboardAnalytics from './components/DashboardAnalytics'
+import * as contactApi from '../../services/contactApi.service'
+import * as quoteApi from '../../services/quoteApi.service'
 import { 
   getDashboardSummary, 
   getAllAnalytics,
@@ -17,6 +21,8 @@ import {
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState<DashboardSummary | null>(null)
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null)
+  const [pendingMessages, setPendingMessages] = useState(0)
+  const [pendingQuotes, setPendingQuotes] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -32,6 +38,12 @@ const Dashboard = () => {
       // Fetch dashboard summary (required)
       const summaryData = await getDashboardSummary()
       setDashboardData(summaryData)
+
+      // Fetch pending messages count using contactApi service
+      fetchPendingCount()
+
+      // Fetch pending quotes count
+      fetchPendingQuotes()
 
       // Fetch analytics data (optional - won't break dashboard if it fails)
       getAllAnalytics()
@@ -50,6 +62,55 @@ const Dashboard = () => {
       setLoading(false)
     }
   }
+
+  const fetchPendingCount = async () => {
+    try {
+      console.log('🔄 Fetching pending messages count...')
+      
+      const response = await contactApi.getPendingCount()
+      
+      console.log('✅ Pending messages response:', response)
+      
+      if (response && typeof response.pending_count === 'number') {
+        console.log('📧 Pending messages:', response.pending_count)
+        setPendingMessages(response.pending_count)
+      }
+    } catch (err) {
+      console.warn('⚠️ Failed to fetch pending messages count:', err)
+      // Dashboard still works without this count
+    }
+  }
+
+  const fetchPendingQuotes = async () => {
+    try {
+      console.log('🔄 Fetching pending quotes count...')
+      
+      const response = await quoteApi.getQuotes()
+      
+      console.log('✅ Quotes response:', response)
+      
+      // Count pending quotes
+      const quotes = response.data || response
+      if (Array.isArray(quotes)) {
+        const pendingCount = quotes.filter((q: any) => q.status === 'pending').length
+        console.log('📋 Pending quotes:', pendingCount)
+        setPendingQuotes(pendingCount)
+      }
+    } catch (err) {
+      console.warn('⚠️ Failed to fetch pending quotes count:', err)
+      // Dashboard still works without this count
+    }
+  }
+
+  // Refresh pending counts every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log('🔄 Auto-refreshing pending counts...')
+      fetchPendingCount()
+      fetchPendingQuotes()
+    }, 30000)
+    return () => clearInterval(interval)
+  }, [])
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) {
@@ -99,8 +160,57 @@ const Dashboard = () => {
 
   return (
     <div className="bg-white pb-[5rem]">
+      {/* Header with Admin Action Buttons */}
+      <div className="mt-8 px-4 max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold text-[#4A5568] mb-6">Dashboard</h1>
+        
+        {/* Action Buttons Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          {/* Quote Requests Button */}
+          <Link
+            href="/admin/quotes"
+            className="relative inline-flex items-center gap-2 bg-[#fab702] hover:bg-[#e8a500] text-black font-semibold px-6 py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 group justify-center"
+          >
+            <MdRequestPage className="h-5 w-5" />
+            <span>Quote Requests</span>
+
+            {/* Pending Quotes Badge */}
+            {pendingQuotes > 0 && (
+              <span className="absolute -top-3 -right-3 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse shadow-lg">
+                {pendingQuotes > 99 ? '99+' : pendingQuotes}
+              </span>
+            )}
+          </Link>
+
+          {/* Contact Messages Button */}
+          <Link
+            href="/admin/contacts"
+            className="relative inline-flex items-center gap-2 bg-[#fab702] hover:bg-[#e8a500] text-black font-semibold px-6 py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 group justify-center"
+          >
+            <MdOutlineMailOutline className="h-5 w-5" />
+            <span>Contact Messages</span>
+
+            {/* Pending Messages Badge */}
+            {pendingMessages > 0 && (
+              <span className="absolute -top-3 -right-3 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse shadow-lg">
+                {pendingMessages > 99 ? '99+' : pendingMessages}
+              </span>
+            )}
+          </Link>
+
+          {/* Location Costs Button */}
+          <Link
+            href="/admin/location-costs"
+            className="relative inline-flex items-center gap-2 bg-[#4A5568] hover:bg-[#2D3748] text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 group justify-center"
+          >
+            <MdLocationOn className="h-5 w-5" />
+            <span>Location Costs</span>
+          </Link>
+        </div>
+      </div>
+
       {/* Stat Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-8 px-4 max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 px-4 max-w-7xl mx-auto">
         {/* Total Revenue */}
         <div className="h-[140px] bg-[#F2F2F2] rounded-xl flex items-center justify-between px-7 shadow-md hover:shadow-lg transition-shadow">
           <div className="flex items-center">
