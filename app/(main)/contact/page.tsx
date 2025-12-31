@@ -1,4 +1,5 @@
 'use client'
+
 import { useState } from 'react'
 import { Parallax } from 'react-parallax'
 import { Loader, CheckCircle, AlertCircle, X } from 'lucide-react'
@@ -118,7 +119,7 @@ const ContactPage = () => {
           <CheckCircle className="w-5 h-5 flex-shrink-0" />
           <div>
             <p className="font-semibold">Success!</p>
-            <p className="text-sm">Your message has been sent successfully. We'll get back to you soon!</p>
+            <p className="text-sm">Your message has been sent successfully. We&rsquo;ll get back to you soon!</p>
           </div>
         </div>
       )}
@@ -238,7 +239,7 @@ const ContactPage = () => {
             {/* Address */}
             <div className="flex items-start gap-3">
               <p className="text-[#fab702] font-semibold whitespace-nowrap mt-1">
-                📍 Address:
+                Address:
               </p>
               <p className="text-white border-b border-b-[#FFFFFF33] pb-2 flex-1">
                 5 Decking Ifite, Anambra State, Nigeria
@@ -248,7 +249,7 @@ const ContactPage = () => {
             {/* Phone */}
             <div className="flex items-center gap-3">
               <p className="text-[#fab702] font-semibold whitespace-nowrap">
-                📞 Phone:
+                Phone:
               </p>
               <a
                 href="tel:08073161010"
@@ -261,7 +262,7 @@ const ContactPage = () => {
             {/* Fax */}
             <div className="flex items-center gap-3">
               <p className="text-[#fab702] font-semibold whitespace-nowrap">
-                📠 Fax:
+                Fax:
               </p>
               <p className="text-white border-b border-b-[#FFFFFF33] pb-2">
                 08073161010
@@ -271,7 +272,7 @@ const ContactPage = () => {
             {/* Email */}
             <div className="flex items-center gap-3">
               <p className="text-[#fab702] font-semibold whitespace-nowrap">
-                ✉️ Email:
+                Email:
               </p>
               <a
                 href="mailto:princemfurnishingconcept@gmail.com"

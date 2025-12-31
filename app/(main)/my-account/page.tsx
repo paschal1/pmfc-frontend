@@ -9,7 +9,7 @@ import { Parallax } from 'react-parallax';
 import { FaCheck } from 'react-icons/fa';
 import { IoMdTime } from 'react-icons/io';
 import Image from 'next/image';
-import * as accountApi from '../../services/accountapi.service'
+import * as accountApi from '../../services/accountapi.service';
 
 // Order statuses in sequence
 const ORDER_STATUSES = [
@@ -35,7 +35,7 @@ const AccountDashboard = () => {
   const [editLoading, setEditLoading] = useState(false);
   const [editMessage, setEditMessage] = useState<string | null>(null);
 
-  // ✅ NEW: Password change state
+  // Password change state
   const [showPasswordFields, setShowPasswordFields] = useState(false);
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -68,27 +68,23 @@ const AccountDashboard = () => {
           setUserData(userResult.value);
           setEditFormData(userResult.value);
         } else {
-          // console.error('Failed to fetch user:', userResult.reason);
           setError('Failed to load user data');
         }
 
         if (ordersResult.status === 'fulfilled') {
           setOrders(ordersResult.value);
         } else {
-          // console.error('Failed to fetch orders:', ordersResult.reason);
           setOrders([]);
         }
 
         if (wishlistResult.status === 'fulfilled') {
           setWishlist(wishlistResult.value);
         } else {
-          // console.error('Failed to fetch wishlist:', wishlistResult.reason);
           setWishlist([]);
         }
 
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load account data');
-        // console.error('Error fetching account data:', err);
       } finally {
         setLoading(false);
       }
@@ -105,7 +101,6 @@ const AccountDashboard = () => {
       setEditLoading(true);
       setEditMessage(null);
 
-      // Only send profile fields, not password
       const profileData = {
         name: editFormData.name,
         email: editFormData.email,
@@ -116,7 +111,7 @@ const AccountDashboard = () => {
       const updatedUser = await accountApi.updateUserProfile(profileData);
       
       setUserData(updatedUser);
-      setEditMessage('✅ Profile updated successfully!');
+      setEditMessage('Profile updated successfully!');
       
       setTimeout(() => {
         setShowEditModal(false);
@@ -125,24 +120,23 @@ const AccountDashboard = () => {
 
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Failed to update profile';
-      setEditMessage(`❌ ${errorMsg}`);
+      setEditMessage(`${errorMsg}`);
     } finally {
       setEditLoading(false);
     }
   };
 
-  // ✅ NEW: Handle password change
+  // Handle password change
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate passwords match
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setPasswordMessage('❌ New passwords do not match');
+      setPasswordMessage('New passwords do not match');
       return;
     }
 
     if (passwordData.newPassword.length < 8) {
-      setPasswordMessage('❌ Password must be at least 8 characters');
+      setPasswordMessage('Password must be at least 8 characters');
       return;
     }
 
@@ -150,15 +144,13 @@ const AccountDashboard = () => {
       setEditLoading(true);
       setPasswordMessage(null);
 
-      // Call API to change password
       await accountApi.changePassword({
         currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword
       });
 
-      setPasswordMessage('✅ Password changed successfully!');
+      setPasswordMessage('Password changed successfully!');
       
-      // Reset password fields after 2 seconds
       setTimeout(() => {
         setPasswordData({
           currentPassword: '',
@@ -171,13 +163,12 @@ const AccountDashboard = () => {
 
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Failed to change password';
-      setPasswordMessage(`❌ ${errorMsg}`);
+      setPasswordMessage(`${errorMsg}`);
     } finally {
       setEditLoading(false);
     }
   };
 
-  // Handle form input change
   const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEditFormData(prev => ({
@@ -186,7 +177,6 @@ const AccountDashboard = () => {
     }));
   };
 
-  // ✅ NEW: Handle password input change
   const handlePasswordInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setPasswordData(prev => ({
@@ -195,7 +185,6 @@ const AccountDashboard = () => {
     }));
   };
 
-  // Reset and close modal
   const handleCloseEditModal = () => {
     setShowEditModal(false);
     setEditMessage(null);
@@ -211,7 +200,6 @@ const AccountDashboard = () => {
     }
   };
 
-  // Loading state
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -223,7 +211,6 @@ const AccountDashboard = () => {
     );
   }
 
-  // Error state
   if (error && !userData) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -242,7 +229,6 @@ const AccountDashboard = () => {
 
   const DashboardPage = () => (
     <div className="min-h-screen bg-black">
-      {/* Hero Section with Parallax */}
       <Parallax
         strength={300}
         className="h-[230px] w-full bg-cover bg-center lg:flex hidden items-center"
@@ -253,7 +239,6 @@ const AccountDashboard = () => {
         </div>
       </Parallax>
       
-      {/* Mobile Hero Section */}
       <div className="h-[230px] w-full lg:hidden block relative">
         <img
           src={'/account-bg.jpg'}
@@ -320,7 +305,6 @@ const AccountDashboard = () => {
 
   const PageHeader = ({ title, icon }: { title: string; icon: React.ReactNode }) => (
     <div>
-      {/* Desktop Parallax Hero */}
       <Parallax
         strength={300}
         className="h-[230px] w-full bg-cover bg-center lg:flex hidden items-center"
@@ -341,7 +325,6 @@ const AccountDashboard = () => {
         </div>
       </Parallax>
       
-      {/* Mobile Hero */}
       <div className="h-[230px] w-full lg:hidden block relative">
         <img
           src={'/account-bg.jpg'}
@@ -362,22 +345,18 @@ const AccountDashboard = () => {
     </div>
   );
 
-  // ✅ NEW: Edit Profile Modal with Password Field
   const EditProfileModal = () => {
     if (!showEditModal) return null;
 
     return (
       <>
-        {/* Backdrop */}
         <div 
           className="fixed inset-0 bg-black/50 z-40"
           onClick={handleCloseEditModal}
         ></div>
 
-        {/* Modal */}
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="bg-gray-900 border border-gray-800 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
-            {/* Header */}
             <div className="sticky top-0 bg-gray-900 border-b border-gray-800 p-6 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-white">Edit Profile</h2>
               <button
@@ -388,9 +367,7 @@ const AccountDashboard = () => {
               </button>
             </div>
 
-            {/* Content */}
             <div className="p-6 space-y-4">
-              {/* Success/Error Message */}
               {editMessage && (
                 <div className={`p-4 rounded-lg text-sm ${
                   editMessage.includes('successfully')
@@ -401,10 +378,8 @@ const AccountDashboard = () => {
                 </div>
               )}
 
-              {/* Profile Form */}
               {!showPasswordFields ? (
                 <form onSubmit={handleEditProfile} className="space-y-4">
-                  {/* Name Field */}
                   <div>
                     <label className="block text-sm text-gray-400 mb-2">Full Name</label>
                     <input
@@ -417,7 +392,6 @@ const AccountDashboard = () => {
                     />
                   </div>
 
-                  {/* Email Field */}
                   <div>
                     <label className="block text-sm text-gray-400 mb-2">Email Address</label>
                     <input
@@ -430,7 +404,6 @@ const AccountDashboard = () => {
                     />
                   </div>
 
-                  {/* Phone Field */}
                   <div>
                     <label className="block text-sm text-gray-400 mb-2">Phone Number</label>
                     <input
@@ -443,7 +416,6 @@ const AccountDashboard = () => {
                     />
                   </div>
 
-                  {/* Address Field */}
                   <div>
                     <label className="block text-sm text-gray-400 mb-2">Address</label>
                     <input
@@ -456,7 +428,6 @@ const AccountDashboard = () => {
                     />
                   </div>
 
-                  {/* Buttons */}
                   <div className="flex flex-col gap-3 pt-4 border-t border-gray-800">
                     <button
                       type="submit"
@@ -467,7 +438,6 @@ const AccountDashboard = () => {
                       {editLoading ? 'Saving...' : 'Save Changes'}
                     </button>
 
-                    {/* ✅ NEW: Change Password Button */}
                     <button
                       type="button"
                       onClick={() => setShowPasswordFields(true)}
@@ -486,9 +456,7 @@ const AccountDashboard = () => {
                   </div>
                 </form>
               ) : (
-                /* ✅ NEW: Password Form */
                 <form onSubmit={handleChangePassword} className="space-y-4">
-                  {/* Message */}
                   {passwordMessage && (
                     <div className={`p-4 rounded-lg text-sm ${
                       passwordMessage.includes('successfully')
@@ -499,7 +467,6 @@ const AccountDashboard = () => {
                     </div>
                   )}
 
-                  {/* Current Password */}
                   <div>
                     <label className="block text-sm text-gray-400 mb-2">Current Password</label>
                     <div className="relative">
@@ -522,7 +489,6 @@ const AccountDashboard = () => {
                     </div>
                   </div>
 
-                  {/* New Password */}
                   <div>
                     <label className="block text-sm text-gray-400 mb-2">New Password</label>
                     <div className="relative">
@@ -545,7 +511,6 @@ const AccountDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Confirm Password */}
                   <div>
                     <label className="block text-sm text-gray-400 mb-2">Confirm Password</label>
                     <div className="relative">
@@ -568,7 +533,6 @@ const AccountDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Buttons */}
                   <div className="flex flex-col gap-3 pt-4 border-t border-gray-800">
                     <button
                       type="submit"
@@ -673,7 +637,7 @@ const AccountDashboard = () => {
             <div className="bg-gray-900 border border-gray-800 rounded-lg p-12 text-center">
               <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-2xl font-bold text-white mb-2">No Orders Yet</h3>
-              <p className="text-gray-400">You haven't placed any orders yet. Start shopping now!</p>
+              <p className="text-gray-400">You haven&rsquo;t placed any orders yet. Start shopping now!</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -740,15 +704,12 @@ const AccountDashboard = () => {
         <PageHeader title="Order Tracking" icon={<Package className="w-8 h-8" />} />
         
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* Order Info Card */}
           <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 mb-8">
             <div className="flex flex-col md:flex-row gap-6">
-              {/* Product Image */}
               <div className="w-32 h-32 bg-gradient-to-br from-gray-800 to-gray-700 rounded-lg flex items-center justify-center text-6xl flex-shrink-0 border border-gray-700">
                 {selectedOrder.productImage}
               </div>
 
-              {/* Order Details */}
               <div className="flex-1">
                 <h2 className="text-2xl font-bold text-white mb-3">
                   {selectedOrder.productName}
@@ -774,7 +735,7 @@ const AccountDashboard = () => {
               </div>
             </div>
 
-            {/* Status Message */}
+            {/* FIXED: Replaced 'We'll' with 'We&rsquo;ll' */}
             <div className={`mt-6 p-4 border-l-4 rounded ${
               isCanceled 
                 ? 'bg-red-900/20 border-red-500' 
@@ -784,25 +745,23 @@ const AccountDashboard = () => {
             }`}>
               <p className="text-white">
                 {isCanceled
-                  ? '❌ This order has been canceled.'
+                  ? 'This order has been canceled.'
                   : currentStatusIndex === ORDER_STATUSES.length - 1
-                  ? '✅ Your order has been delivered. Enjoy your purchase!'
+                  ? 'Your order has been delivered. Enjoy your purchase!'
                   : currentStatusIndex >= 3
-                  ? '🚚 Your item is on the way. Track its progress below.'
-                  : '⚙️ Your order is being prepared. We will notify you of any updates.'}
+                  ? 'Your item is on the way. Track its progress below.'
+                  : 'Your order is being prepared. We&rsquo;ll notify you of any updates.'}
               </p>
             </div>
           </div>
 
-          {/* Progress Tracker */}
+          {/* Rest of the component remains unchanged */}
           {!isCanceled && (
             <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 md:p-8 mb-8">
               <h2 className="text-2xl font-bold text-white mb-8">Delivery Progress</h2>
 
-              {/* Desktop Progress Bar */}
               <div className="hidden md:block">
                 <div className="relative">
-                  {/* Progress Line */}
                   <div className="absolute top-6 left-0 right-0 h-1 bg-gray-700">
                     <div
                       className="h-full bg-[#fab702] transition-all duration-500"
@@ -812,7 +771,6 @@ const AccountDashboard = () => {
                     ></div>
                   </div>
 
-                  {/* Status Points */}
                   <div className="relative flex justify-between">
                     {ORDER_STATUSES.map((status, index) => {
                       const isCompleted = index <= currentStatusIndex;
@@ -820,7 +778,6 @@ const AccountDashboard = () => {
 
                       return (
                         <div key={status.key} className="flex flex-col items-center">
-                          {/* Circle */}
                           <div
                             className={`w-12 h-12 rounded-full flex items-center justify-center border-4 transition-all duration-300 ${
                               isCompleted
@@ -835,7 +792,6 @@ const AccountDashboard = () => {
                             )}
                           </div>
 
-                          {/* Label */}
                           <div className="mt-3 text-center max-w-[120px]">
                             <p
                               className={`text-sm font-semibold ${
@@ -857,7 +813,6 @@ const AccountDashboard = () => {
                 </div>
               </div>
 
-              {/* Mobile Progress List */}
               <div className="md:hidden space-y-4">
                 {ORDER_STATUSES.map((status, index) => {
                   const isCompleted = index <= currentStatusIndex;
@@ -865,7 +820,6 @@ const AccountDashboard = () => {
 
                   return (
                     <div key={status.key} className="flex items-start gap-4">
-                      {/* Line and Circle */}
                       <div className="flex flex-col items-center">
                         <div
                           className={`w-10 h-10 rounded-full flex items-center justify-center border-4 transition-all ${
@@ -889,7 +843,6 @@ const AccountDashboard = () => {
                         )}
                       </div>
 
-                      {/* Content */}
                       <div className="flex-1 pt-2">
                         <p
                           className={`font-semibold ${
@@ -911,7 +864,6 @@ const AccountDashboard = () => {
             </div>
           )}
 
-          {/* Shipping Details */}
           <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
             <h2 className="text-xl font-bold text-white mb-6">Shipping Information</h2>
             
@@ -975,9 +927,9 @@ const AccountDashboard = () => {
         window.URL.revokeObjectURL(url);
         document.body.removeChild(link);
 
-        setGdprMessage('✅ Your data has been downloaded successfully!');
+        setGdprMessage('Your data has been downloaded successfully!');
       } catch (err) {
-        setGdprMessage('❌ ' + (err instanceof Error ? err.message : 'Failed to download data'));
+        setGdprMessage('' + (err instanceof Error ? err.message : 'Failed to download data'));
       } finally {
         setGdprLoading(false);
       }
@@ -1069,7 +1021,7 @@ const AccountDashboard = () => {
               {wishlist.map((item) => (
                 <div key={item.id} className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden hover:border-[#fab702] transition-all duration-500">
                   <div className="h-48 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center text-6xl">
-                    {item.product_image || '🎁'}
+                    {item.product_image || 'Gift'}
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">{item.product_name}</h3>

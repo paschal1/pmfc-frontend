@@ -1,4 +1,5 @@
 'use client'
+
 import { data } from '../data/data'
 import Image from 'next/image'
 import { Parallax } from 'react-parallax'
@@ -40,6 +41,7 @@ const FirstBody: React.FC = () => {
           </div>
         </div>
       </Parallax>
+
       <Parallax
         strength={300}
         className="h-[1633px] lg:h-[700px] sm:h-[1445px] mt-20 bg2"
@@ -61,6 +63,7 @@ const FirstBody: React.FC = () => {
             <div className="h-[8px] w-[8px] rounded-full bg-[#fab702]"></div>
             <div className="w-[150px] sm:w-[200px] md:w-[300px] border-b-[rgb(248, 249, 250)] border-b"></div>
           </div>
+
           <div className="flex lg:flex-row md:flex-col flex-col items-center mt-10 gap-20">
             <div className="h-[180px] w-[180px] border border-white rounded-full cursor-pointer flex items-center group">
               <h1 className="text-white mx-auto uppercase group-hover:text-[#fab702]">
@@ -83,10 +86,12 @@ const FirstBody: React.FC = () => {
               </h1>
             </div>
           </div>
+
           <div className="w-[300px] lg:w-[1050px] sm:w-[600px] border-b-[rgb(248, 249, 250)] border-b mt-28 sm:mt-24 lg:mt-28"></div>
+
           <div className="w-[300px] lg:w-[1050px] sm:w-[600px] mt-10 text-[13px] lg:text-[13px] sm:text-[14px] font-thin">
             <h1 className="text-white leading-relaxed">
-              At Prince M Furniture Company, we believe that exceptional furniture begins with understanding your vision. Our comprehensive process ensures that every piece we create is a perfect blend of artistry, functionality, and craftsmanship. From the initial consultation where we learn about your space and style preferences, to the final installation where your dream furniture comes to life, we're with you every step of the way. Our experienced team of designers and craftsmen work collaboratively to transform ideas into stunning reality, using only premium materials and time-tested techniques. We take pride in our attention to detail, commitment to quality, and dedication to exceeding your expectations. Whether you're furnishing a home, office, or commercial space, our streamlined process guarantees a seamless experience from concept to completion. Trust us to create furniture that not only meets your needs but becomes a cherished part of your space for years to come.
+              At Prince M Furniture Company, we believe that exceptional furniture begins with understanding your vision. Our comprehensive process ensures that every piece we create is a perfect blend of artistry, functionality, and craftsmanship. From the initial consultation where we learn about your space and style preferences, to the final installation where your dream furniture comes to life, we&rsquo;re with you every step of the way. Our experienced team of designers and craftsmen work collaboratively to transform ideas into stunning reality, using only premium materials and time-tested techniques. We take pride in our attention to detail, commitment to quality, and dedication to exceeding your expectations. Whether you&rsquo;re furnishing a home, office, or commercial space, our streamlined process guarantees a seamless experience from concept to completion. Trust us to create furniture that not only meets your needs but becomes a cherished part of your space for years to come.
             </h1>
           </div>
         </div>

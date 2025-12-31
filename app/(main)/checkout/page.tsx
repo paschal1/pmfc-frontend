@@ -1,4 +1,5 @@
 'use client'
+
 import { useState, useEffect } from 'react'
 import { Parallax } from 'react-parallax'
 import { Loader, ArrowLeft, Check, Copy, AlertCircle } from 'lucide-react'
@@ -108,7 +109,6 @@ export default function CheckoutPage() {
 
   // Handle Paystack Payment
   const handlePaystackPayment = async () => {
-    // Validate form first
     if (!validateForm()) return
 
     try {
@@ -116,40 +116,19 @@ export default function CheckoutPage() {
       const paystack = new PaystackPop()
 
       paystack.newTransaction({
-        key: 'pk_live_7fa94265109b3b80e76e7ab6b402e5160f5a35aa', // Paystack public key
-        amount: calculateTotal() * 100, // Convert to kobo
+        key: 'pk_live_7fa94265109b3b80e76e7ab6b402e5160f5a35aa',
+        amount: calculateTotal() * 100,
         email: formData.email,
         metadata: {
           custom_fields: [
-            {
-              display_name: 'Full Name',
-              variable_name: 'fullname',
-              value: formData.fullname,
-            },
-            {
-              display_name: 'Phone',
-              variable_name: 'phone',
-              value: formData.phone,
-            },
-            {
-              display_name: 'Shipping Address',
-              variable_name: 'shipping_address',
-              value: formData.shipping_address,
-            },
-            {
-              display_name: 'City',
-              variable_name: 'shipping_city',
-              value: formData.shipping_city,
-            },
-            {
-              display_name: 'State',
-              variable_name: 'shipping_state',
-              value: formData.shipping_state,
-            },
+            { display_name: 'Full Name', variable_name: 'fullname', value: formData.fullname },
+            { display_name: 'Phone', variable_name: 'phone', value: formData.phone },
+            { display_name: 'Shipping Address', variable_name: 'shipping_address', value: formData.shipping_address },
+            { display_name: 'City', variable_name: 'shipping_city', value: formData.shipping_city },
+            { display_name: 'State', variable_name: 'shipping_state', value: formData.shipping_state },
           ],
         },
         onSuccess: async (response: any) => {
-          // Payment successful, now create order
           await createOrder('Paystack', response.reference)
         },
         onCancel: () => {
@@ -164,7 +143,6 @@ export default function CheckoutPage() {
     }
   }
 
-  // Validate form
   const validateForm = (): boolean => {
     if (!formData.fullname.trim()) {
       setError('Full name is required')
@@ -193,7 +171,6 @@ export default function CheckoutPage() {
     return true
   }
 
-  // Create order in database
   const createOrder = async (paymentMethod: string, paystackRef?: string) => {
     try {
       setSubmitting(true)
@@ -213,10 +190,8 @@ export default function CheckoutPage() {
 
       const response = await cartApi.placeOrder(orderData)
 
-      // Success!
       setSuccess(true)
 
-      // Redirect after 2 seconds
       setTimeout(() => {
         window.location.href = `/order-confirmation/${response.order.id}`
       }, 2000)
@@ -230,13 +205,9 @@ export default function CheckoutPage() {
     }
   }
 
-  // Handle Manual Transfer
   const handleManualTransfer = async (e: React.FormEvent) => {
     e.preventDefault()
-    
     if (!validateForm()) return
-
-    // For manual transfer, create order with pending payment status
     await createOrder('Bank Transfer')
   }
 
@@ -289,7 +260,6 @@ export default function CheckoutPage() {
 
   return (
     <div className="flex flex-col bg-black min-h-screen">
-      {/* Hero Section */}
       <Parallax
         strength={300}
         className="h-[230px] w-full bg-cover bg-center lg:flex hidden items-center"
@@ -308,7 +278,6 @@ export default function CheckoutPage() {
         </div>
       </Parallax>
 
-      {/* Mobile Hero */}
       <div className="h-[230px] w-full lg:hidden block relative">
         <img
           src={'/checkout-bg.jpg'}
@@ -326,7 +295,6 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      {/* Error Message */}
       {error && (
         <div className="bg-red-900/30 text-red-400 border border-red-700 p-4 m-6 rounded-lg flex items-start gap-3">
           <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
@@ -338,12 +306,9 @@ export default function CheckoutPage() {
       )}
 
       <div className="flex lg:flex-row flex-col mx-auto mt-8 gap-8 px-4 lg:px-20 pb-20 max-w-7xl w-full">
-        {/* Checkout Form */}
         <form onSubmit={handleManualTransfer} className="flex-1 space-y-8">
-          {/* Personal Information */}
           <div className="bg-[#212529] rounded-lg p-6">
             <h2 className="text-xl font-bold text-white mb-6">Personal Information</h2>
-            
             <div className="space-y-4">
               <div>
                 <label className="block text-gray-400 text-sm mb-2">Full Name *</label>
@@ -357,7 +322,6 @@ export default function CheckoutPage() {
                   required
                 />
               </div>
-
               <div>
                 <label className="block text-gray-400 text-sm mb-2">Email Address *</label>
                 <input
@@ -370,7 +334,6 @@ export default function CheckoutPage() {
                   required
                 />
               </div>
-
               <div>
                 <label className="block text-gray-400 text-sm mb-2">Phone Number *</label>
                 <input
@@ -386,10 +349,8 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Shipping Information */}
           <div className="bg-[#212529] rounded-lg p-6">
             <h2 className="text-xl font-bold text-white mb-6">Shipping Information</h2>
-            
             <div className="space-y-4">
               <div>
                 <label className="block text-gray-400 text-sm mb-2">Street Address *</label>
@@ -403,7 +364,6 @@ export default function CheckoutPage() {
                   required
                 />
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-gray-400 text-sm mb-2">City *</label>
@@ -417,7 +377,6 @@ export default function CheckoutPage() {
                     required
                   />
                 </div>
-
                 <div>
                   <label className="block text-gray-400 text-sm mb-2">State *</label>
                   <input
@@ -431,7 +390,6 @@ export default function CheckoutPage() {
                   />
                 </div>
               </div>
-
               <div>
                 <label className="block text-gray-400 text-sm mb-2">Postal Code</label>
                 <input
@@ -446,10 +404,8 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Payment Information */}
           <div className="bg-[#212529] rounded-lg p-6">
             <h2 className="text-xl font-bold text-white mb-6">Payment Method</h2>
-            
             <div className="space-y-4">
               <div>
                 <label className="block text-gray-400 text-sm mb-3">Select Payment Method</label>
@@ -465,7 +421,7 @@ export default function CheckoutPage() {
                         className="w-4 h-4 text-[#fab702]"
                       />
                       <span className="text-white group-hover:text-[#fab702] transition-colors">
-                        {method === 'Paystack' ? '💳 Paystack (Card, Transfer, USSD)' : '🏦 Bank Transfer'}
+                        {method === 'Paystack' ? 'Paystack (Card, Transfer, USSD)' : 'Bank Transfer'}
                       </span>
                     </label>
                   ))}
@@ -474,11 +430,9 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Bank Details Display - Only show if Bank Transfer is selected */}
           {formData.payment_method === 'Bank Transfer' && (
             <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-6">
-              <h3 className="text-lg font-bold text-white mb-4">📋 Bank Transfer Details</h3>
-              
+              <h3 className="text-lg font-bold text-white mb-4">Bank Transfer Details</h3>
               <div className="space-y-4 bg-black rounded p-4">
                 <div>
                   <p className="text-gray-400 text-sm">Account Name</p>
@@ -493,7 +447,6 @@ export default function CheckoutPage() {
                     </button>
                   </div>
                 </div>
-
                 <div>
                   <p className="text-gray-400 text-sm">Bank</p>
                   <div className="flex items-center justify-between mt-1">
@@ -507,7 +460,6 @@ export default function CheckoutPage() {
                     </button>
                   </div>
                 </div>
-
                 <div>
                   <p className="text-gray-400 text-sm">Account Number</p>
                   <div className="flex items-center justify-between mt-1">
@@ -521,7 +473,6 @@ export default function CheckoutPage() {
                     </button>
                   </div>
                 </div>
-
                 <div className="text-amount mt-4 pt-4 border-t border-[#FFFFFF33]">
                   <p className="text-gray-400 text-sm">Amount to Transfer</p>
                   <p className="text-[#fab702] font-bold text-xl">
@@ -531,16 +482,15 @@ export default function CheckoutPage() {
               </div>
 
               {copied && (
-                <p className="text-green-400 text-sm mt-3">✅ Copied to clipboard!</p>
+                <p className="text-green-400 text-sm mt-3">Copied to clipboard!</p>
               )}
 
               <p className="text-gray-400 text-xs mt-4">
-                After making the transfer, submit your order. We'll verify the payment and process your order.
+                After making the transfer, submit your order. We&rsquo;ll verify the payment and process your order.
               </p>
             </div>
           )}
 
-          {/* Submit Button */}
           {formData.payment_method === 'Bank Transfer' ? (
             <button
               type="submit"
@@ -563,11 +513,8 @@ export default function CheckoutPage() {
           )}
         </form>
 
-        {/* Order Summary */}
         <div className="lg:w-96 bg-[#1E2024] rounded-lg p-6 h-fit sticky top-20">
           <h2 className="font-bold text-2xl text-white mb-6">Order Summary</h2>
-
-          {/* Items Summary */}
           <div className="mb-6 max-h-96 overflow-y-auto">
             <div className="space-y-4 border-b border-[#FFFFFF33] pb-6">
               {cartItems.map((item) => {
@@ -589,20 +536,17 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Cost Breakdown */}
           <div className="space-y-4 border-b border-[#FFFFFF33] pb-6 mb-6">
             <div className="flex justify-between text-gray-400">
               <span>Subtotal</span>
               <span className="text-white">₦{cartTotal.toLocaleString('en-NG')}</span>
             </div>
-
             <div className="flex justify-between text-gray-400">
               <span>Shipping</span>
               <span className="text-white">
                 {shippingCost === 0 ? 'Free' : `₦${shippingCost.toLocaleString('en-NG')}`}
               </span>
             </div>
-
             <div className="flex justify-between text-gray-400">
               <span>Tax (7.5%)</span>
               <span className="text-white">
@@ -611,7 +555,6 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Total */}
           <div className="mb-6">
             <div className="flex justify-between items-center">
               <span className="text-white font-bold text-lg">Total Amount</span>
@@ -621,7 +564,6 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Info Box */}
           <div className="bg-[#fab702]/10 border border-[#fab702]/30 rounded-lg p-4 text-sm text-gray-400">
             <p className="mb-2 text-white font-semibold">Important</p>
             <ul className="list-disc list-inside space-y-1 text-xs">
