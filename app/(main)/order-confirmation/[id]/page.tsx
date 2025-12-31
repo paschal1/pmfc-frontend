@@ -250,7 +250,7 @@ export default function OrderConfirmationPage() {
 
         {/* Next Steps */}
         <div className="bg-[#fab702]/10 border border-[#fab702]/30 rounded-lg p-6 mb-8">
-          <h3 className="text-white font-bold text-lg mb-4">What's Next?</h3>
+          <h3 className="text-white font-bold text-lg mb-4">What&rsquo;s Next?</h3>
           <ul className="space-y-3 text-gray-400">
             <li className="flex items-start gap-3">
               <span className="text-[#fab702] font-bold mt-1">1.</span>
