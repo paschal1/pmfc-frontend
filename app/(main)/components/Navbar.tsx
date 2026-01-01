@@ -357,7 +357,7 @@ const Navbar = () => {
           variants={cartDropdownVariants}
           transition={{ duration: 0.2 }}
           className={`lg:hidden bg-[rgb(24, 25, 27)] border-t border-[#fab702] mx-6 rounded-b-lg overflow-hidden z-40 ${
-            cartOpen && menubarOpen ? 'pointer-events-auto' : 'pointer-events-none'
+            cartOpen && menubarOpen ? 'pointer-events-auto' : 'pointer-events-none absolute invisible'
           }`}
         >
           <div className="border-b border-[#fab702]/30 p-4">
@@ -463,7 +463,7 @@ const Navbar = () => {
           className={`flex flex-col items-start text-white text-xs uppercase gap-6 font-semibold px-10 overflow-hidden transition-all duration-500 ease-in-out ${
             menubarOpen
               ? 'max-h-[100%] opacity-100 pb-20 mt-8'
-              : 'max-h-0 opacity-0'
+              : 'max-h-0 opacity-0 pb-0 mt-0'
           }`}
         >
           <Link href={'/'} onClick={() => closeMenubar()}>
