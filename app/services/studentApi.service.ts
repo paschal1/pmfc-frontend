@@ -19,6 +19,10 @@ export interface StudentFormData {
   goals?: string
   id_proof?: File
   resume?: File
+  training_program_id: number
+  payment_method: 'Bank Transfer' | 'Paystack'
+  payment_reference?: string
+  payment_status: 'Pending' | 'Paid'
 }
 
 export interface Student {
@@ -42,16 +46,74 @@ export interface Student {
   updated_at: string
 }
 
+export interface TrainingProgram {
+  id: number
+  title: string
+  description: string
+  price: string | number
+  start_date: string
+  end_date: string
+  created_at: string
+  updated_at: string
+}
+
+export interface Enrollment {
+  id: number
+  student_id: number
+  training_program_id: number
+  enrollment_date: string
+  payment_method: string
+  payment_reference?: string
+  payment_status: string
+  trainingProgram?: TrainingProgram
+  student?: Student
+}
+
 export interface EnrollmentResponse {
   message: string
-  Enrollment: Student
+  student: Student
+  enrollment: Enrollment
+}
+
+// Get All Training Programs (Public)
+export const getAllTrainingPrograms = async (): Promise<TrainingProgram[]> => {
+  try {
+    const response = await apiClient.get('/training-programs')
+    return response.data.trainingPrograms || response.data.data || response.data
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response?.data?.message || 
+        error.response?.data?.error || 
+        'Failed to fetch training programs'
+      )
+    }
+    throw new Error('Failed to fetch training programs')
+  }
+}
+
+// Get Single Training Program (Public)
+export const getTrainingProgram = async (id: number): Promise<TrainingProgram> => {
+  try {
+    const response = await apiClient.get(`/training-programs/${id}`)
+    return response.data.trainingProgram || response.data.data || response.data
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response?.data?.message || 
+        error.response?.data?.error || 
+        'Failed to fetch training program'
+      )
+    }
+    throw new Error('Failed to fetch training program')
+  }
 }
 
 // Get All Students (Public)
 export const getAllStudents = async (): Promise<Student[]> => {
   try {
     const response = await apiClient.get('/students')
-    return response.data.enrollment || response.data.data || response.data
+    return response.data.students || response.data.enrollment || response.data.data || response.data
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(
@@ -68,7 +130,7 @@ export const getAllStudents = async (): Promise<Student[]> => {
 export const getStudent = async (id: number): Promise<Student> => {
   try {
     const response = await apiClient.get(`/students/${id}`)
-    return response.data.Enrollment || response.data.data || response.data
+    return response.data.student || response.data.Enrollment || response.data.data || response.data
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(
@@ -81,12 +143,11 @@ export const getStudent = async (id: number): Promise<Student> => {
   }
 }
 
-// Create Student Enrollment (Public)
+// Create Student Enrollment with Training Program and Payment (Public)
 export const createStudentEnrollment = async (
   formData: StudentFormData
 ): Promise<EnrollmentResponse> => {
   try {
-    // Create FormData for file upload
     const data = new FormData()
     
     // Append all required fields
@@ -100,6 +161,14 @@ export const createStudentEnrollment = async (
     data.append('emergency_contact', formData.emergency_contact)
     data.append('joining_date', formData.joining_date)
     data.append('current_skill_level', formData.current_skill_level)
+    data.append('training_program_id', formData.training_program_id.toString())
+    data.append('payment_method', formData.payment_method)
+    data.append('payment_status', formData.payment_status)
+    
+    // Payment reference (for Paystack)
+    if (formData.payment_reference) {
+      data.append('payment_reference', formData.payment_reference)
+    }
     
     // Optional fields
     if (formData.previous_experience?.trim()) {
@@ -119,7 +188,7 @@ export const createStudentEnrollment = async (
       console.log('📎 Resume attached:', formData.resume.name)
     }
 
-    console.log('📤 Submitting enrollment...')
+    console.log('📤 Submitting enrollment with payment...')
     
     const response = await apiClient.post('/students', data, {
       headers: {
@@ -133,7 +202,6 @@ export const createStudentEnrollment = async (
     console.error('❌ Enrollment error:', error)
     
     if (axios.isAxiosError(error)) {
-      // Handle validation errors (422)
       if (error.response?.status === 422) {
         const errors = error.response.data.errors
         const errorMessages = Object.values(errors)
@@ -143,7 +211,6 @@ export const createStudentEnrollment = async (
         throw new Error(`Validation error: ${errorMessages}`)
       }
       
-      // Handle other API errors
       const errorMessage = 
         error.response?.data?.message || 
         error.response?.data?.error || 
@@ -158,6 +225,40 @@ export const createStudentEnrollment = async (
   }
 }
 
+// Get All Enrollments (Admin)
+export const getAllEnrollments = async (): Promise<Enrollment[]> => {
+  try {
+    const response = await apiClient.get('/enrollments')
+    return response.data.enrollments || response.data.data || response.data
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response?.data?.message || 
+        error.response?.data?.error || 
+        'Failed to fetch enrollments'
+      )
+    }
+    throw new Error('Failed to fetch enrollments')
+  }
+}
+
+// Get Single Enrollment (Admin)
+export const getEnrollment = async (id: number): Promise<Enrollment> => {
+  try {
+    const response = await apiClient.get(`/enrollments/${id}`)
+    return response.data.enrollment || response.data.data || response.data
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response?.data?.message || 
+        error.response?.data?.error || 
+        'Failed to fetch enrollment'
+      )
+    }
+    throw new Error('Failed to fetch enrollment')
+  }
+}
+
 // Update Student (Admin only - requires auth)
 export const updateStudent = async (
   id: number,
@@ -166,7 +267,6 @@ export const updateStudent = async (
   try {
     const data = new FormData()
     
-    // Append only provided fields
     Object.entries(formData).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         if (value instanceof File) {
@@ -184,7 +284,7 @@ export const updateStudent = async (
         'Content-Type': 'multipart/form-data',
       },
       params: {
-        _method: 'PUT' // Laravel method spoofing for multipart/form-data
+        _method: 'PUT'
       }
     })
 
@@ -214,5 +314,21 @@ export const deleteStudent = async (id: number): Promise<void> => {
       )
     }
     throw new Error('Failed to delete student')
+  }
+}
+
+// Delete Enrollment (Admin only - requires auth)
+export const deleteEnrollment = async (id: number): Promise<void> => {
+  try {
+    await apiClient.delete(`/enrollments/${id}`)
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response?.data?.message || 
+        error.response?.data?.error || 
+        'Failed to delete enrollment'
+      )
+    }
+    throw new Error('Failed to delete enrollment')
   }
 }
