@@ -6,6 +6,7 @@ import { Loader, ArrowLeft, Check, Copy, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import PaystackPop from '@paystack/inline-js'
 import * as cartApi from '../../services/cartApi.service'
+import * as AccountNo from '../../services/accountNoApi.service'
 
 interface CartItem extends cartApi.CartItem {
   product?: {
@@ -31,13 +32,6 @@ interface CheckoutFormData {
   deposit_amount?: number
 }
 
-// Bank details
-const BANK_DETAILS = {
-  accountName: 'Nwokeocha Paschal C',
-  bank: 'Access Bank',
-  accountNumber: '0078508706',
-}
-
 export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -49,6 +43,11 @@ export default function CheckoutPage() {
   const [taxRate] = useState(0.075)
   const [copied, setCopied] = useState(false)
   const [processingPaystack, setProcessingPaystack] = useState(false)
+
+  // Payment accounts states
+  const [paymentAccounts, setPaymentAccounts] = useState<AccountNo.AccountDetail[]>([])
+  const [selectedAccount, setSelectedAccount] = useState<AccountNo.AccountDetail | null>(null)
+  const [loadingAccounts, setLoadingAccounts] = useState(true)
 
   const [formData, setFormData] = useState<CheckoutFormData>({
     fullname: '',
@@ -62,9 +61,10 @@ export default function CheckoutPage() {
     payment_type: 'Full Payment',
   })
 
-  // Fetch cart on mount
+  // Fetch cart and payment accounts on mount
   useEffect(() => {
     fetchCart()
+    fetchPaymentAccounts()
   }, [])
 
   const fetchCart = async () => {
@@ -82,6 +82,24 @@ export default function CheckoutPage() {
       setCartTotal(0)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchPaymentAccounts = async () => {
+    try {
+      setLoadingAccounts(true)
+      const accounts = await AccountNo.getActiveAccounts()
+      setPaymentAccounts(accounts)
+      
+      // Auto-select first account if available
+      if (accounts.length > 0) {
+        setSelectedAccount(accounts[0])
+      }
+    } catch (error) {
+      console.error('Failed to load payment accounts:', error)
+      // Don't show error to user, they can still proceed with Paystack
+    } finally {
+      setLoadingAccounts(false)
     }
   }
 
@@ -209,6 +227,71 @@ export default function CheckoutPage() {
     e.preventDefault()
     if (!validateForm()) return
     await createOrder('Bank Transfer')
+  }
+
+  // Render bank account details
+  const renderBankDetails = () => {
+    if (!selectedAccount) return null
+
+    if (selectedAccount.account_type === 'bank') {
+      return (
+        <div className="space-y-4 bg-black rounded p-4">
+          <div>
+            <p className="text-gray-400 text-sm">Account Name</p>
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-white font-semibold">{selectedAccount.account_name}</p>
+              <button
+                type="button"
+                onClick={() => copyToClipboard(selectedAccount.account_name)}
+                className="text-[#fab702] hover:text-white transition-colors"
+              >
+                <Copy className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          <div>
+            <p className="text-gray-400 text-sm">Bank Name</p>
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-white font-semibold">{selectedAccount.bank_name}</p>
+              <button
+                type="button"
+                onClick={() => copyToClipboard(selectedAccount.bank_name || '')}
+                className="text-[#fab702] hover:text-white transition-colors"
+              >
+                <Copy className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          <div>
+            <p className="text-gray-400 text-sm">Account Number</p>
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-white font-semibold font-mono">{selectedAccount.account_number}</p>
+              <button
+                type="button"
+                onClick={() => copyToClipboard(selectedAccount.account_number || '')}
+                className="text-[#fab702] hover:text-white transition-colors"
+              >
+                <Copy className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          {selectedAccount.additional_info && (
+            <div>
+              <p className="text-gray-400 text-sm">Additional Info</p>
+              <p className="text-white font-semibold text-sm mt-1">{selectedAccount.additional_info}</p>
+            </div>
+          )}
+          <div className="text-amount mt-4 pt-4 border-t border-[#FFFFFF33]">
+            <p className="text-gray-400 text-sm">Amount to Transfer</p>
+            <p className="text-[#fab702] font-bold text-xl">
+              ₦{calculateTotal().toLocaleString('en-NG', { maximumFractionDigits: 2 })}
+            </p>
+          </div>
+        </div>
+      )
+    }
+
+    return null
   }
 
   if (loading) {
@@ -433,53 +516,50 @@ export default function CheckoutPage() {
           {formData.payment_method === 'Bank Transfer' && (
             <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-6">
               <h3 className="text-lg font-bold text-white mb-4">Bank Transfer Details</h3>
-              <div className="space-y-4 bg-black rounded p-4">
-                <div>
-                  <p className="text-gray-400 text-sm">Account Name</p>
-                  <div className="flex items-center justify-between mt-1">
-                    <p className="text-white font-semibold">{BANK_DETAILS.accountName}</p>
-                    <button
-                      type="button"
-                      onClick={() => copyToClipboard(BANK_DETAILS.accountName)}
-                      className="text-[#fab702] hover:text-white transition-colors"
-                    >
-                      <Copy className="w-4 h-4" />
-                    </button>
-                  </div>
+              
+              {loadingAccounts ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader className="w-6 h-6 animate-spin text-[#fab702]" />
                 </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Bank</p>
-                  <div className="flex items-center justify-between mt-1">
-                    <p className="text-white font-semibold">{BANK_DETAILS.bank}</p>
-                    <button
-                      type="button"
-                      onClick={() => copyToClipboard(BANK_DETAILS.bank)}
-                      className="text-[#fab702] hover:text-white transition-colors"
-                    >
-                      <Copy className="w-4 h-4" />
-                    </button>
-                  </div>
+              ) : paymentAccounts.length === 0 ? (
+                <div className="bg-black rounded p-4 text-center">
+                  <AlertCircle className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
+                  <p className="text-gray-400">No bank accounts available</p>
+                  <p className="text-gray-500 text-sm mt-2">Please use Paystack for payment</p>
                 </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Account Number</p>
-                  <div className="flex items-center justify-between mt-1">
-                    <p className="text-white font-semibold font-mono">{BANK_DETAILS.accountNumber}</p>
-                    <button
-                      type="button"
-                      onClick={() => copyToClipboard(BANK_DETAILS.accountNumber)}
-                      className="text-[#fab702] hover:text-white transition-colors"
-                    >
-                      <Copy className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-                <div className="text-amount mt-4 pt-4 border-t border-[#FFFFFF33]">
-                  <p className="text-gray-400 text-sm">Amount to Transfer</p>
-                  <p className="text-[#fab702] font-bold text-xl">
-                    ₦{calculateTotal().toLocaleString('en-NG', { maximumFractionDigits: 2 })}
-                  </p>
-                </div>
-              </div>
+              ) : (
+                <>
+                  {paymentAccounts.length > 1 && (
+                    <div className="mb-6 pb-6 border-b border-blue-700">
+                      <p className="text-gray-400 text-sm mb-3">Select Bank Account:</p>
+                      <div className="space-y-2">
+                        {paymentAccounts.map((account) => (
+                          <label
+                            key={account.id}
+                            className="flex items-center gap-3 cursor-pointer p-3 bg-black rounded hover:bg-gray-900 transition"
+                          >
+                            <input
+                              type="radio"
+                              name="selected_account"
+                              checked={selectedAccount?.id === account.id}
+                              onChange={() => setSelectedAccount(account)}
+                              className="w-4 h-4 text-[#fab702]"
+                            />
+                            <div>
+                              <p className="text-white font-semibold text-sm">{account.account_name}</p>
+                              <p className="text-gray-400 text-xs">
+                                {account.bank_name}
+                              </p>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {renderBankDetails()}
+                </>
+              )}
 
               {copied && (
                 <p className="text-green-400 text-sm mt-3">Copied to clipboard!</p>
@@ -494,8 +574,8 @@ export default function CheckoutPage() {
           {formData.payment_method === 'Bank Transfer' ? (
             <button
               type="submit"
-              disabled={submitting}
-              className="w-full bg-[#fab702] text-black py-4 rounded-lg font-bold text-lg hover:opacity-75 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2"
+              disabled={submitting || (paymentAccounts.length === 0 && !loadingAccounts)}
+              className="w-full bg-[#fab702] text-black py-4 rounded-lg font-bold text-lg hover:opacity-75 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {submitting ? <Loader className="w-5 h-5 animate-spin" /> : null}
               {submitting ? 'Processing...' : 'Place Order (After Transfer)'}
@@ -505,7 +585,7 @@ export default function CheckoutPage() {
               type="button"
               onClick={handlePaystackPayment}
               disabled={processingPaystack}
-              className="w-full bg-[#fab702] text-black py-4 rounded-lg font-bold text-lg hover:opacity-75 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full bg-[#fab702] text-black py-4 rounded-lg font-bold text-lg hover:opacity-75 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {processingPaystack ? <Loader className="w-5 h-5 animate-spin" /> : null}
               {processingPaystack ? 'Processing Payment...' : 'Pay with Paystack'}

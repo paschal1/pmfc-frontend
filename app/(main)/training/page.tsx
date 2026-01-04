@@ -767,7 +767,7 @@ const StudentEnrollmentForm = () => {
                 )}
 
                 <p className="text-gray-400 text-xs mt-4">
-                  After making the transfer, submit your enrollment. We'll verify the payment and process your registration.
+                  After making the transfer, submit your enrollment. We will verify the payment and process your registration.
                 </p>
               </div>
             )}
